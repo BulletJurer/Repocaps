@@ -1,0 +1,13 @@
+[Para maquina Madre/local]
+Instalar node.js
+npm install express
+-en el archivo server.js esta el nro de puerto a configurar junto con el directorio a usar
+npm install -g localtunnel
+npm install -g nodemon
+
+[iniciacion]
+-Localtunel debe ser iniciado desde otro terminal sin problema con:
+lt --port 3000
+
+-Este comando tiene que ser ejecutado en el directorio del proyecto(cd webing)
+nodemon server.js
