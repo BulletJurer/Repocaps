@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname, 'public')));//carpeta hija
 
 //Seleccion de archivo ruta -------------------------------------------------
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'testeo.html'));
+  res.sendFile(path.join(__dirname, 'public', 'inicio-sesion.html'));
 });
 
 //Ejemplo de ruta que lee datos desde MySQL
