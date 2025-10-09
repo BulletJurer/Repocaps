@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Taller - Taller PepsiCo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            background-color: #004B93;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+        }
+
+        .sidebar .nav-link {
+            color: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #003366;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #004B93 0%, #002D62 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .filters-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .table-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-pausado {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-proceso {
+            background-color: #cce7ff;
+            color: #004085;
+        }
+
+        .status-terminado {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-ingresado {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
+        .file-badge {
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .file-badge:hover {
+            background-color: #dde1e6;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #004B93;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- BARRA LATERAL DE NAVEGACIÓN -->
+    <div class="sidebar">
+        <!-- LOGO Y NOMBRE DE LA EMPRESA -->
+        <div class="p-3 text-center border-bottom">
+            <h5>Taller PepsiCo Chile</h5>
+        </div>
+        <!-- MENÚ DE NAVEGACIÓN -->
+        <nav class="nav flex-column">
+            <a class="nav-link" href="inicio.html">🏠 Inicio</a>
+            <a class="nav-link" href="ingreso-vehiculos.html">🚗 Ingreso Vehículos</a>
+            <a class="nav-link" href="reportes.html">📊 Reportes</a>
+            <a class="nav-link" href="#">💬 Chat</a>
+        </nav>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="main-content">
+        <!-- BARRA SUPERIOR CON BOTÓN CERRAR SESIÓN -->
+        <div class="row mb-4">
+            <div class="col-12 text-end">
+                <a href="inicio-sesion.html" class="btn btn-outline-danger">🔒 Cerrar Sesión</a>
+            </div>
+        </div>
+
+        <!-- ENCABEZADO DE LA PÁGINA -->
+        <div class="page-header">
+            <h1>🛠️ Vehículos en Taller</h1>
+            <p class="mb-0">Gestión y seguimiento de vehículos</p>
+        </div>
+
+        <!-- ESTADÍSTICAS PRINCIPALES -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Total Vehículos</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">En Proceso</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Pausados</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="stat-number">1</div>
+                    <div class="stat-label">Por Ingresar</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE FILTROS -->
+        <div class="card filters-card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Filtrar Vehículos</h5>
+
+                <div class="row">
+                    <!-- FILTRO POR AÑO -->
+                    <div class="col-md-3 mb-3">
+                        <label for="filtroAnio" class="form-label">Filtrar por Año</label>
+                        <select class="form-select" id="filtroAnio">
+                            <option value="">Todos los años</option>
+                            <option value="2024" selected>2024</option>
+                            <option value="2023">2023</option>
+                        </select>
+                    </div>
+
+                    <!-- FILTRO POR MES -->
+                    <div class="col-md-3 mb-3">
+                        <label for="filtroMes" class="form-label">Filtrar por Mes</label>
+                        <select class="form-select" id="filtroMes">
+                            <option value="">Todos los meses</option>
+                            <option value="1">Enero</option>
+                            <option value="2">Febrero</option>
+                            <option value="3" selected>Marzo</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Mayo</option>
+                            <option value="6">Junio</option>
+                            <option value="7">Julio</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Septiembre</option>
+                            <option value="10">Octubre</option>
+                            <option value="11">Noviembre</option>
+                            <option value="12">Diciembre</option>
+                        </select>
+                    </div>
+
+                    <!-- FILTRO POR ESTADO -->
+                    <div class="col-md-3 mb-3">
+                        <label for="filtroEstado" class="form-label">Filtrar por Estado</label>
+                        <select class="form-select" id="filtroEstado">
+                            <option value="">Todos los estados</option>
+                            <option value="proceso">En Proceso</option>
+                            <option value="pausado">Pausado</option>
+                            <option value="terminado">Terminado</option>
+                            <option value="ingresado">Recién Ingresado</option>
+                        </select>
+                    </div>
+
+                    <!-- FILTRO POR PATENTE -->
+                    <div class="col-md-3 mb-3">
+                        <label for="filtroPatente" class="form-label">Filtrar por Patente</label>
+                        <input type="text" id="filtroPatente" class="form-control" placeholder="Ej. AB123CD">
+                    </div>
+
+                    <!-- BOTÓN APLICAR FILTROS -->
+                    <div class="col-md-3 mb-3 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" onclick="aplicarFiltros()">🔍 Buscar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLA PRINCIPAL DE VEHÍCULOS -->
+        <div class="card table-card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Historial: Ingreso al Taller</h5>
+                <span class="badge bg-primary" id="contadorRegistros">8 vehículos</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Patente</th>
+                                <th>Fecha Ingreso</th>
+                                <th>Encargado</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th>Documentos</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaTaller"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS JAVASCRIPT -->
+    <script>
+        // BASE DE DATOS SIMULADA DE VEHÍCULOS EN TALLER
+        const vehiculosTaller = [
+            {
+                patente: 'AB123CD',
+                fecha: '15/03/2024',
+                encargado: 'Juan Pérez',
+                descripcion: 'Mantención preventiva programada - Cambio de aceite y filtros',
+                estado: 'proceso',
+                documento: 'mantencion_ab123cd.doc'
+            },
+            {
+                patente: 'XY789ZW',
+                fecha: '20/03/2024',
+                encargado: 'María González',
+                descripcion: 'Reparación de sistema de frenos - Pastillas y discos',
+                estado: 'pausado',
+                documento: 'frenos_xy789zw.doc'
+            },
+            {
+                patente: 'EF456GH',
+                fecha: '25/03/2024',
+                encargado: 'Carlos López',
+                descripcion: 'Revisión completa de motor - Análisis de rendimiento',
+                estado: 'proceso',
+                documento: 'motor_ef456gh.doc'
+            },
+            {
+                patente: 'IJ789KL',
+                fecha: '22/03/2024',
+                encargado: 'Ana Silva',
+                descripcion: 'Cambio de neumáticos - Rotación y balanceo',
+                estado: 'proceso',
+                documento: 'neumaticos_ij789kl.doc'
+            },
+            {
+                patente: 'MN123OP',
+                fecha: '18/03/2024',
+                encargado: 'Pedro Rodríguez',
+                descripcion: 'Alineación y balanceo - Corrección de dirección',
+                estado: 'proceso',
+                documento: 'alineacion_mn123op.doc'
+            },
+            {
+                patente: 'QR456ST',
+                fecha: '28/03/2024',
+                encargado: 'Laura Martínez',
+                descripcion: 'Revisión eléctrica - Sistema de carga y batería',
+                estado: 'ingresado',
+                documento: 'electrico_qr456st.doc'
+            },
+            {
+                patente: 'UV789WX',
+                fecha: '26/03/2024',
+                encargado: 'Diego Fernández',
+                descripcion: 'Reparación de transmisión - Cambio de fluidos',
+                estado: 'pausado',
+                documento: 'transmision_uv789wx.doc'
+            },
+            {
+                patente: 'YZ123AB',
+                fecha: '24/03/2024',
+                encargado: 'Sofia Ramirez',
+                descripcion: 'Revisión de suspensión - Amortiguadores y resortes',
+                estado: 'proceso',
+                documento: 'suspension_yz123ab.doc'
+            }
+        ];
+
+        // INICIALIZAR TABLA AL CARGAR LA PÁGINA
+        document.addEventListener('DOMContentLoaded', function () {
+            llenarTablaTaller(vehiculosTaller);
+        });
+
+        // FUNCIÓN PARA APLICAR FILTROS
+        function aplicarFiltros() {
+            const anio = document.getElementById('filtroAnio').value;
+            const mes = document.getElementById('filtroMes').value;
+            const estado = document.getElementById('filtroEstado').value;
+            const patenteFiltro = document.getElementById('filtroPatente').value.trim().toUpperCase();
+
+            let datosFiltrados = vehiculosTaller;
+
+            // Aplicar filtro por año
+            if (anio) {
+                datosFiltrados = datosFiltrados.filter(item => {
+                    const añoItem = item.fecha.split('/')[2];
+                    return añoItem === anio;
+                });
+            }
+
+            // Aplicar filtro por mes
+            if (mes) {
+                datosFiltrados = datosFiltrados.filter(item => {
+                    const mesItem = item.fecha.split('/')[1];
+                    return mesItem === mes.toString().padStart(2, '0');
+                });
+            }
+
+            // Aplicar filtro por estado
+            if (estado) {
+                datosFiltrados = datosFiltrados.filter(item => item.estado === estado);
+            }
+
+            // Aplicar filtro por patente
+            if (patenteFiltro) {
+                datosFiltrados = datosFiltrados.filter(item => {
+                    return item.patente.toUpperCase().includes(patenteFiltro);
+                });
+            }
+
+            // Actualizar tabla con resultados filtrados
+            llenarTablaTaller(datosFiltrados);
+        }
+
+        // FUNCIÓN PARA LLENAR LA TABLA CON DATOS
+        function llenarTablaTaller(datos) {
+            const tbody = document.getElementById('tablaTaller');
+            const contador = document.getElementById('contadorRegistros');
+
+            tbody.innerHTML = '';
+            contador.textContent = `${datos.length} vehículos`;
+
+            datos.forEach(item => {
+                const fila = document.createElement('tr');
+
+                let claseEstado = 'status-badge ';
+                let textoEstado = '';
+
+                // Determinar clase y texto según estado
+                switch (item.estado) {
+                    case 'pausado':
+                        claseEstado += 'status-pausado';
+                        textoEstado = 'Pausado';
+                        break;
+                    case 'proceso':
+                        claseEstado += 'status-proceso';
+                        textoEstado = 'En Proceso';
+                        break;
+                    case 'terminado':
+                        claseEstado += 'status-terminado';
+                        textoEstado = 'Terminado';
+                        break;
+                    case 'ingresado':
+                        claseEstado += 'status-ingresado';
+                        textoEstado = 'Recién Ingresado';
+                        break;
+                }
+
+                fila.innerHTML = `
+                    <td><strong>${item.patente}</strong></td>
+                    <td>${item.fecha}</td>
+                    <td>${item.encargado}</td>
+                    <td>${item.descripcion}</td>
+                    <td><span class="${claseEstado}">${textoEstado}</span></td>
+                    <td>
+                        <span class="file-badge" onclick="verDocumento('${item.documento}')">
+                            📄 ${item.documento}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="verFicha('${item.patente}')">
+                            👁️ Ver
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(fila);
+            });
+        }
+
+        // FUNCIÓN PARA VER DOCUMENTO
+        function verDocumento(nombreArchivo) {
+            alert(`Abriendo documento: ${nombreArchivo}`);
+            // En una aplicación real, aquí iría la lógica para abrir el documento
+        }
+
+        // FUNCIÓN PARA VER FICHA DEL VEHÍCULO
+        function verFicha(patente) {
+            window.location.href = `ficha-vehiculo.html?patente=${patente}`;
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
