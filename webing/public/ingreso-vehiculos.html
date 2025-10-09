@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingreso Vehículos - Taller PepsiCo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            background-color: #004B93;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+        }
+
+        .sidebar .nav-link {
+            color: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #003366;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #003366 !important;
+            border-left: 4px solid #FFC72C;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #004B93 0%, #002D62 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+
+        .required-field::after {
+            content: " *";
+            color: red;
+        }
+
+        .calendar-container {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day {
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .calendar-day:hover {
+            background-color: #e9ecef;
+        }
+
+        .calendar-day.occupied {
+            background-color: #ffebee;
+            color: #c62828;
+            cursor: not-allowed;
+        }
+
+        .calendar-day.selected {
+            background-color: #004B93;
+            color: white;
+        }
+
+        .calendar-day.header {
+            font-weight: bold;
+            background-color: #f8f9fa;
+            cursor: default;
+        }
+
+        .calendar-day.weekend {
+            background-color: #f8f9fa;
+        }
+
+        .calendar-day.today {
+            border: 2px solid #004B93;
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .time-slot {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .time-slot:hover {
+            background-color: #e9ecef;
+        }
+
+        .time-slot.occupied {
+            background-color: #ffebee;
+            color: #c62828;
+            cursor: not-allowed;
+        }
+
+        .time-slot.selected {
+            background-color: #004B93;
+            color: white;
+        }
+
+        .schedule-summary {
+            background: #e8f5e8;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- BARRA LATERAL DE NAVEGACIÓN -->
+    <div class="sidebar">
+        <!-- LOGO Y NOMBRE DE LA EMPRESA -->
+        <div class="p-3 text-center border-bottom">
+            <h5>Taller PepsiCo Chile</h5>
+        </div>
+        <!-- MENÚ DE NAVEGACIÓN -->
+        <nav class="nav flex-column">
+            <a class="nav-link" href="inicio.html">🏠 Inicio</a>
+            <a class="nav-link active" href="ingreso-vehiculos.html">🚗 Ingreso Vehículos</a>
+            <a class="nav-link" href="reportes.html">📊 Reportes</a>
+            <a class="nav-link" href="#">💬 Chat</a>
+        </nav>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="main-content">
+        <!-- BARRA SUPERIOR CON BOTÓN CERRAR SESIÓN -->
+        <div class="row mb-4">
+            <div class="col-12 text-end">
+                <a href="inicio-sesion.html" class="btn btn-outline-danger">🔒 Cerrar Sesión</a>
+            </div>
+        </div>
+
+        <!-- ENCABEZADO DE LA PÁGINA -->
+        <div class="page-header">
+            <h1>Registrar Ingreso</h1>
+            <p class="mb-0">Sistema de ingreso de vehículos al taller - Evite solapamientos</p>
+        </div>
+
+        <!-- SECCIÓN CALENDARIO PARA EVITAR SOLAPAMIENTOS -->
+        <div class="calendar-container">
+            <h5 class="mb-3">📅 Seleccionar Fecha y Hora</h5>
+            <p class="text-muted mb-3">Seleccione una fecha y hora disponible para evitar solapamientos con otros
+                vehículos</p>
+
+            <!-- CONTROLES DE NAVEGACIÓN DEL CALENDARIO -->
+            <div class="calendar-header">
+                <button class="btn btn-sm btn-outline-secondary" onclick="previousMonth()">‹ Mes Anterior</button>
+                <h6 id="currentMonth">Marzo 2024</h6>
+                <button class="btn btn-sm btn-outline-secondary" onclick="nextMonth()">Mes Siguiente ›</button>
+            </div>
+
+            <!-- GRID DEL CALENDARIO -->
+            <div class="calendar-grid" id="calendar">
+                <!-- Los días del calendario se generarán con JavaScript -->
+            </div>
+
+            <!-- HORARIOS DISPONIBLES -->
+            <div class="time-slots" id="timeSlots">
+                <!-- Los horarios se generarán con JavaScript -->
+            </div>
+
+            <!-- RESUMEN DE LA CITA SELECCIONADA -->
+            <div class="schedule-summary" id="scheduleSummary" style="display: none;">
+                <h6>📋 Cita Programada:</h6>
+                <p id="selectedSchedule">-</p>
+            </div>
+        </div>
+
+        <!-- FORMULARIO DE INGRESO DE VEHÍCULO -->
+        <div class="card form-card">
+            <div class="card-body">
+                <h5 class="card-title mb-3 required-field">Datos del Vehículo</h5>
+
+                <form id="ingresoForm">
+                    <!-- CAMPO PATENTE DEL VEHÍCULO -->
+                    <div class="mb-3">
+                        <label for="patente" class="form-label required-field">Patente Vehículo</label>
+                        <input type="text" class="form-control" id="patente"
+                            placeholder="Ingresa la patente del vehículo" maxlength="8" required>
+                        <div class="form-text">Máximo 8 caracteres</div>
+                    </div>
+
+                    <!-- CAMPO RUT DEL CHOFER -->
+                    <div class="mb-3">
+                        <label for="rut" class="form-label required-field">RUT Chofer</label>
+                        <input type="text" class="form-control" id="rut" placeholder="Ej: 12.345.678-9" maxlength="12"
+                            required>
+                        <div class="form-text">Máximo 12 caracteres (formato: 12.345.678-9)</div>
+                    </div>
+
+                    <!-- SELECTOR TIPO DE MANTENIMIENTO -->
+                    <div class="mb-3">
+                        <label for="tipoMantenimiento" class="form-label required-field">Tipo Mantenimiento</label>
+                        <select class="form-select" id="tipoMantenimiento" required>
+                            <option value="">Selecciona el tipo de mantenimiento</option>
+                            <option value="preventivo">Preventivo</option>
+                            <option value="correctivo">Correctivo</option>
+                        </select>
+                    </div>
+
+                    <!-- CAMPO KILOMETRAJE -->
+                    <div class="mb-3">
+                        <label for="kilometraje" class="form-label required-field">Kilometraje</label>
+                        <input type="number" class="form-control" id="kilometraje"
+                            placeholder="Ingresa el kilometraje actual" min="0" required>
+                        <div class="form-text">Mínimo 0 km</div>
+                    </div>
+
+                    <!-- DESCRIPCIÓN DEL ESTADO DEL VEHÍCULO -->
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Estado Vehículo</label>
+                        <textarea class="form-control" id="descripcion" rows="4"
+                            placeholder="Descripción detallada del ingreso..."></textarea>
+                    </div>
+
+                    <!-- CAMPOS OCULTOS PARA FECHA Y HORA SELECCIONADA -->
+                    <input type="hidden" id="fechaSeleccionada" name="fechaSeleccionada" required>
+                    <input type="hidden" id="horaSeleccionada" name="horaSeleccionada" required>
+
+                    <!-- BOTÓN PARA AGENDAR INGRESO -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Agendar Ingreso</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS JAVASCRIPT -->
+    <script>
+        // FECHAS OCUPADAS DE EJEMPLO (en una aplicación real vendrían de una base de datos)
+        const fechasOcupadas = {
+            '2024-03-15': ['09:00', '14:00'],
+            '2024-03-20': ['10:00', '15:00', '16:00'],
+            '2024-03-25': ['08:00', '11:00'],
+            '2024-03-28': ['13:00', '17:00']
+        };
+
+        let currentDate = new Date();
+        let selectedDate = null;
+        let selectedTime = null;
+
+        // HORARIOS DISPONIBLES DEL TALLER
+        const horariosDisponibles = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
+
+        // INICIALIZAR CALENDARIO AL CARGAR LA PÁGINA
+        document.addEventListener('DOMContentLoaded', function () {
+            generateCalendar();
+            updateTimeSlots();
+            setupRutValidation();
+        });
+
+        // FUNCIÓN PARA GENERAR EL CALENDARIO
+        function generateCalendar() {
+            const calendar = document.getElementById('calendar');
+            const currentMonthElement = document.getElementById('currentMonth');
+
+            // Configurar mes actual
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+            currentMonthElement.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+
+            // Limpiar calendario
+            calendar.innerHTML = '';
+
+            // Agregar encabezados de días
+            const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            days.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day header';
+                dayElement.textContent = day;
+                calendar.appendChild(dayElement);
+            });
+
+            // Obtener primer día del mes
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const startingDay = firstDay.getDay();
+
+            // Obtener último día del mes
+            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            const totalDays = lastDay.getDate();
+
+            // Agregar días vacíos al inicio
+            for (let i = 0; i < startingDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day';
+                calendar.appendChild(emptyDay);
+            }
+
+            // Agregar días del mes
+            const today = new Date();
+            for (let day = 1; day <= totalDays; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+
+                const dateString = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+
+                // Verificar si es hoy
+                if (today.getDate() === day && today.getMonth() === currentDate.getMonth() && today.getFullYear() === currentDate.getFullYear()) {
+                    dayElement.classList.add('today');
+                }
+
+                // Verificar si está ocupado
+                if (fechasOcupadas[dateString]) {
+                    dayElement.classList.add('occupied');
+                    dayElement.title = 'Día con citas ocupadas';
+                } else {
+                    dayElement.addEventListener('click', () => selectDate(day, dateString));
+                }
+
+                // Verificar si es fin de semana
+                const dayOfWeek = new Date(currentDate.getFullYear(), currentDate.getMonth(), day).getDay();
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    dayElement.classList.add('weekend');
+                }
+
+                calendar.appendChild(dayElement);
+            }
+        }
+
+        // FUNCIÓN PARA SELECCIONAR FECHA
+        function selectDate(day, dateString) {
+            selectedDate = dateString;
+            selectedTime = null;
+
+            // Remover selección anterior
+            document.querySelectorAll('.calendar-day.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Agregar selección actual
+            document.querySelectorAll('.calendar-day').forEach(el => {
+                if (el.textContent == day && !el.classList.contains('header')) {
+                    el.classList.add('selected');
+                }
+            });
+
+            updateTimeSlots();
+        }
+
+        // FUNCIÓN PARA ACTUALIZAR HORARIOS DISPONIBLES
+        function updateTimeSlots() {
+            const timeSlots = document.getElementById('timeSlots');
+            const scheduleSummary = document.getElementById('scheduleSummary');
+
+            timeSlots.innerHTML = '';
+            scheduleSummary.style.display = 'none';
+
+            if (!selectedDate) return;
+
+            const ocupados = fechasOcupadas[selectedDate] || [];
+
+            horariosDisponibles.forEach(time => {
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot';
+                timeSlot.textContent = time;
+
+                if (ocupados.includes(time)) {
+                    timeSlot.classList.add('occupied');
+                    timeSlot.title = 'Horario ocupado';
+                } else {
+                    timeSlot.addEventListener('click', () => selectTime(time));
+                }
+
+                timeSlots.appendChild(timeSlot);
+            });
+        }
+
+        // FUNCIÓN PARA SELECCIONAR HORA
+        function selectTime(time) {
+            selectedTime = time;
+
+            // Remover selección anterior
+            document.querySelectorAll('.time-slot.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Agregar selección actual
+            document.querySelectorAll('.time-slot').forEach(el => {
+                if (el.textContent === time && !el.classList.contains('occupied')) {
+                    el.classList.add('selected');
+                }
+            });
+
+            // Mostrar resumen
+            const scheduleSummary = document.getElementById('scheduleSummary');
+            const selectedSchedule = document.getElementById('selectedSchedule');
+
+            const date = new Date(selectedDate);
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = date.toLocaleDateString('es-ES', options);
+
+            selectedSchedule.textContent = `${formattedDate} a las ${time} horas`;
+            scheduleSummary.style.display = 'block';
+
+            // Actualizar campos ocultos del formulario
+            document.getElementById('fechaSeleccionada').value = selectedDate;
+            document.getElementById('horaSeleccionada').value = selectedTime;
+        }
+
+        // FUNCIÓN PARA MES ANTERIOR
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            generateCalendar();
+            selectedDate = null;
+            selectedTime = null;
+            updateTimeSlots();
+        }
+
+        // FUNCIÓN PARA MES SIGUIENTE
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            generateCalendar();
+            selectedDate = null;
+            selectedTime = null;
+            updateTimeSlots();
+        }
+
+        // FUNCIÓN PARA VALIDACIÓN DE RUT
+        function setupRutValidation() {
+            const rutInput = document.getElementById('rut');
+
+            rutInput.addEventListener('input', function (e) {
+                let value = e.target.value.replace(/[^0-9kK-]/g, '');
+
+                // Formatear RUT automáticamente
+                if (value.length > 2 && value.indexOf('-') === -1) {
+                    value = value.slice(0, -1) + '-' + value.slice(-1);
+                }
+
+                e.target.value = value;
+            });
+        }
+
+        // VALIDACIÓN DEL FORMULARIO DE INGRESO
+        document.getElementById('ingresoForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Validar fecha y hora seleccionada
+            if (!selectedDate || !selectedTime) {
+                alert('Por favor seleccione una fecha y hora para el ingreso del vehículo.');
+                return;
+            }
+
+            const patente = document.getElementById('patente').value;
+            const rut = document.getElementById('rut').value;
+
+            // Validar formato de RUT básico
+            if (!rut.match(/^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$/)) {
+                alert('Por favor ingrese un RUT válido en el formato: 12.345.678-9');
+                return;
+            }
+
+            // Guardar en localStorage (simulación de base de datos)
+            const nuevoVehiculo = {
+                patente: patente,
+                rut: rut,
+                tipoMantenimiento: document.getElementById('tipoMantenimiento').value,
+                kilometraje: document.getElementById('kilometraje').value,
+                descripcion: document.getElementById('descripcion').value,
+                fecha: selectedDate,
+                hora: selectedTime,
+                fechaIngreso: new Date().toISOString(),
+                estado: 'ingresado'
+            };
+
+            // Guardar en localStorage
+            guardarVehiculoEnBD(nuevoVehiculo);
+
+            alert(`✅ Ingreso agendado correctamente:\nVehículo: ${patente}\nFecha: ${selectedDate}\nHora: ${selectedTime}`);
+
+            // Limpiar formulario
+            document.getElementById('ingresoForm').reset();
+            selectedDate = null;
+            selectedTime = null;
+            updateTimeSlots();
+            document.getElementById('scheduleSummary').style.display = 'none';
+        });
+
+        // FUNCIÓN PARA GUARDAR VEHÍCULO EN BASE DE DATOS (SIMULACIÓN)
+        function guardarVehiculoEnBD(vehiculo) {
+            // Simulación de guardado en base de datos
+            let vehiculos = JSON.parse(localStorage.getItem('vehiculosTaller')) || [];
+            vehiculos.push(vehiculo);
+            localStorage.setItem('vehiculosTaller', JSON.stringify(vehiculos));
+
+            // Actualizar fechas ocupadas
+            if (!fechasOcupadas[vehiculo.fecha]) {
+                fechasOcupadas[vehiculo.fecha] = [];
+            }
+            fechasOcupadas[vehiculo.fecha].push(vehiculo.hora);
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
