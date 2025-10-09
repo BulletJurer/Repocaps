@@ -37,12 +37,17 @@
             <h2 class="text-primary">Gestión de Vehículos</h2>
             <p class="text-muted">Taller PepsiCo Chile</p>
         </div>
-        
-        <!-- ALERTA PARA MENSAJES -->
+
+        <!-- ALERTA DE ERROR -->
         <div class="alert alert-danger" id="errorAlert" role="alert">
             <span id="errorMessage"></span>
         </div>
 
+        <!-- ALERTA DE ÉXITO -->
+        <div class="alert alert-success" id="successAlert" role="alert">
+            <span id="successMessage"></span>
+        </div>
+        
         <!-- FORMULARIO DE LOGIN -->
         <form id="loginForm">
             <!-- CAMPO USUARIO -->
@@ -64,12 +69,10 @@
             </div>
             
             <!-- BOTÓN DE INGRESO CON SPINNER -->
-            <div class="d-grid mb-3">
-                <button type="submit" class="btn btn-primary" id="loginButton">
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary mb-3" id="loginButton">
+                    <span class="spinner-border spinner-border-sm loading-spinner" id="loadingSpinner"></span>
                     <span id="buttonText">Ingresar</span>
-                    <div class="spinner-border spinner-border-sm loading-spinner" id="loadingSpinner" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
                 </button>
             </div>
             
@@ -78,52 +81,107 @@
                 <a href="#" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
             </div>
 
-            <!-- INFORMACIÓN DE PRUEBA -->
-            <div class="mt-3 p-3 bg-light rounded">
-                <small class="text-muted">
-                    <strong>Para pruebas:</strong><br>
-                    Servidor: http://localhost:3000<br>
-                    Endpoint: POST /api/login
-                </small>
+            <!-- INFORMACIÓN DE DEBUG (solo en desarrollo) -->
+            <div class="mt-3 p-2 bg-light rounded small">
+                <strong>Estado del servidor:</strong>
+                <span id="serverStatus" class="badge bg-secondary">Verificando...</span>
             </div>
         </form>
     </div>
 
+    <!-- SCRIPTS JAVASCRIPT -->
     <script>
-        // Configuración de la API
-        const API_BASE_URL = 'http://localhost:3000';
-
         // Elementos del DOM
         const loginForm = document.getElementById('loginForm');
         const loginButton = document.getElementById('loginButton');
-        const buttonText = document.getElementById('buttonText');
         const loadingSpinner = document.getElementById('loadingSpinner');
+        const buttonText = document.getElementById('buttonText');
         const errorAlert = document.getElementById('errorAlert');
         const errorMessage = document.getElementById('errorMessage');
+        const successAlert = document.getElementById('successAlert');
+        const successMessage = document.getElementById('successMessage');
+        const serverStatus = document.getElementById('serverStatus');
 
-        // Validación en tiempo real del campo usuario
-        document.getElementById('usuario').addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^a-zA-ZÑñ]/g, '');
+        // URL base del servidor
+        const API_BASE_URL = 'http://localhost:3000';
+
+        // Verificar estado del servidor al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            checkServerStatus();
         });
 
-        // Manejar envío del formulario
+        // FUNCIÓN PARA VERIFICAR ESTADO DEL SERVIDOR
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/status`);
+                if (response.ok) {
+                    serverStatus.textContent = 'Conectado';
+                    serverStatus.className = 'badge bg-success';
+                } else {
+                    throw new Error('Servidor no responde correctamente');
+                }
+            } catch (error) {
+                console.error('❌ Error conectando al servidor:', error);
+                serverStatus.textContent = 'Desconectado';
+                serverStatus.className = 'badge bg-danger';
+                showError('No se puede conectar al servidor. Verifica que el servidor esté ejecutándose.');
+            }
+        }
+
+        // FUNCIÓN PARA MOSTRAR ERROR
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorAlert.style.display = 'block';
+            successAlert.style.display = 'none';
+        }
+
+        // FUNCIÓN PARA MOSTRAR ÉXITO
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successAlert.style.display = 'block';
+            errorAlert.style.display = 'none';
+        }
+
+        // FUNCIÓN PARA OCULTAR ALERTAS
+        function hideAlerts() {
+            errorAlert.style.display = 'none';
+            successAlert.style.display = 'none';
+        }
+
+        // FUNCIÓN PARA MOSTRAR/OCULTAR LOADING
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loadingSpinner.style.display = 'inline-block';
+                buttonText.textContent = ' Verificando...';
+                loginButton.disabled = true;
+            } else {
+                loadingSpinner.style.display = 'none';
+                buttonText.textContent = 'Ingresar';
+                loginButton.disabled = false;
+            }
+        }
+
+        // VALIDACIÓN DEL FORMULARIO DE LOGIN
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const usuario = document.getElementById('usuario').value;
             const contrasena = document.getElementById('contrasena').value;
             
-            // Validaciones básicas
+            // Validaciones básicas del frontend
             if (!usuario || !contrasena) {
                 showError('Por favor complete todos los campos');
                 return;
             }
 
+            // Ocultar alertas anteriores
+            hideAlerts();
+            
             // Mostrar estado de carga
-            setLoadingState(true);
+            setLoading(true);
 
             try {
-                // Realizar petición al backend
+                // Realizar petición al servidor
                 const response = await fetch(`${API_BASE_URL}/api/login`, {
                     method: 'POST',
                     headers: {
@@ -138,80 +196,37 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    // Login exitoso
-                    console.log('Login exitoso:', data.user);
-                    showSuccess('Login exitoso! Redirigiendo...');
+                    showSuccess(`✅ Bienvenido ${data.empleado.nombre}`);
                     
                     // Guardar datos del usuario en localStorage
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    localStorage.setItem('token', 'simulated-token-' + Date.now());
+                    localStorage.setItem('usuario', JSON.stringify(data.empleado));
+                    localStorage.setItem('token', 'authenticated'); // Token simple para demostración
                     
-                    // Redirigir después de un breve delay
+                    // Redirigir al dashboard después de un breve delay
                     setTimeout(() => {
                         window.location.href = 'inicio.html';
                     }, 1000);
                     
                 } else {
-                    // Error en login
-                    showError(data.message || 'Error en el login');
+                    showError(data.message || 'Error en la autenticación');
                 }
 
             } catch (error) {
-                console.error('Error en la petición:', error);
-                showError('Error de conexión. Verifica que el servidor esté corriendo.');
+                console.error('❌ Error en la petición:', error);
+                showError('Error de conexión. Verifica que el servidor esté funcionando.');
             } finally {
-                setLoadingState(false);
+                setLoading(false);
             }
         });
 
-        // Función para mostrar estado de carga
-        function setLoadingState(isLoading) {
-            if (isLoading) {
-                loginButton.disabled = true;
-                buttonText.style.display = 'none';
-                loadingSpinner.style.display = 'inline-block';
-            } else {
-                loginButton.disabled = false;
-                buttonText.style.display = 'inline';
-                loadingSpinner.style.display = 'none';
-            }
-        }
-
-        // Función para mostrar errores
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorAlert.style.display = 'block';
-            errorAlert.className = 'alert alert-danger';
-        }
-
-        // Función para mostrar éxito
-        function showSuccess(message) {
-            errorMessage.textContent = message;
-            errorAlert.style.display = 'block';
-            errorAlert.className = 'alert alert-success';
-        }
-
-        // Función para ocultar mensajes
-        function hideMessages() {
-            errorAlert.style.display = 'none';
-        }
-
-        // Probando conexión con el servidor al cargar la página
-        window.addEventListener('load', async function() {
-            console.log('Probando conexión con el servidor...');
-            
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/vehiculos`);
-                if (response.ok) {
-                    console.log('✅ Conexión con el servidor establecida');
-                } else {
-                    console.warn('⚠️ Servidor respondió con error:', response.status);
-                }
-            } catch (error) {
-                console.error('❌ No se pudo conectar con el servidor:', error);
-                showError('No se puede conectar al servidor. Asegúrate de que el backend esté corriendo en http://localhost:3000');
-            }
+        // Validación en tiempo real del campo usuario
+        document.getElementById('usuario').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^a-zA-ZÑñ]/g, '');
         });
+
+        // Limpiar errores al empezar a escribir
+        document.getElementById('usuario').addEventListener('focus', hideAlerts);
+        document.getElementById('contrasena').addEventListener('focus', hideAlerts);
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
