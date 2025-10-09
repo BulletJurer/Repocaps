@@ -6,8 +6,12 @@ npm install -g localtunnel
 npm install -g nodemon
 
 [iniciacion]
--Localtunel debe ser iniciado desde otro terminal sin problema con:
-lt --port 3000
+
+-Localtunel desde powershell tiene que ejecutar el webhook permanente
+lt --port 7777 subdomain repocapingerhook
 
 -Este comando tiene que ser ejecutado en el directorio del proyecto(cd webing)
 nodemon server.js
+
+-revelar pagina al internet con localtunnel:
+lt --port 3000 subdomain testeorepocaps
