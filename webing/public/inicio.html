@@ -113,7 +113,7 @@
 
       if (!usuarioData || token !== "authenticated") {
         console.warn("Redirigiendo al login porque no hay usuario o token inválido");
-        window.location.href = "inicio-sesion.html";
+        window.location.replace = "inicio-sesion.html";
         return;
       }
 
@@ -123,7 +123,7 @@
         cargarEstadisticas();
       } catch (error) {
         console.error("Error cargando usuario:", error);
-        window.location.href = "inicio-sesion.html";
+        window.location.replace = "inicio-sesion.html";
       }
     });
 
