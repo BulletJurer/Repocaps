@@ -147,20 +147,16 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// Escuchar en todas las interfaces de red
-app.listen(port, '0.0.0.0', () => {
-  console.log(`🎉 Servidor iniciado en http://localhost:${port}`);
-  console.log(`🌐 También accesible en la red local`);
-  console.log(`📋 Endpoints disponibles:`);
-  console.log(`   POST http://179.60.66.44:${port}/api/login`);
-  console.log(`   GET  http://179.60.66.44:${port}/api/status`);
-  console.log(`   GET  http://179.60.66.44:${port}/api/empleados`);
-});
 
 
 //Inicia el servidor
 app.listen(port, () => {
 console.log(`Servidor iniciado en http://localhost:${port}`);
+// Escuchar en todas las interfaces de red
+console.log(`📋 Endpoints disponibles:`);
+console.log(`   POST http://localhost:${port}/api/login`);
+console.log(`   GET  http://localhost:${port}/api/status`);
+console.log(`   GET  http://localhost:${port}/api/empleados`);
 });
 
 const cors = require('cors');
