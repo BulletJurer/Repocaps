@@ -14,6 +14,87 @@ app.get('/', (req, res) => {
 res.sendFile(path.join(__dirname, 'public', 'inicio-sesion.html'));
 });
 
+// 🔐 ENDPOINT DE LOGIN
+app.post('/api/login', (req, res) => {
+  const { usuario, contrasena } = req.body;
+
+  console.log('🔐 Intento de login para:', usuario);
+
+  if (!usuario || !contrasena) {
+    return res.status(400).json({
+      success: false,
+      message: 'Usuario y contraseña son requeridos'
+    });
+  }
+
+  const query = 'SELECT * FROM empleados WHERE usuario = ? AND contrasena = ?';
+  
+  db.query(query, [usuario, contrasena], (err, results) => {
+    if (err) {
+      console.error('❌ Error en consulta MySQL:', err);
+      return res.status(500).json({
+        success: false,
+        message: 'Error del servidor en la base de datos'
+      });
+    }
+
+    if (results.length > 0) {
+      const empleado = results[0];
+      console.log('✅ Login exitoso para:', empleado.nombre);
+      
+      res.json({
+        success: true,
+        message: 'Login exitoso',
+        empleado: {
+          rut: empleado.rut,
+          nombre: empleado.nombre,
+          cargo: empleado.cargo,
+          region: empleado.region,
+          horario: empleado.horario,
+          disponibilidad: empleado.disponibilidad,
+          usuario: empleado.usuario
+        }
+      });
+    } else {
+      console.log('❌ Credenciales incorrectas para:', usuario);
+      res.status(401).json({
+        success: false,
+        message: 'Usuario o contraseña incorrectos'
+      });
+    }
+  });
+});
+
+// 🩺 ENDPOINT PARA VERIFICAR ESTADO
+app.get('/api/status', (req, res) => {
+  db.query('SELECT 1 as test', (err, results) => {
+    if (err) {
+      return res.json({
+        status: 'Servidor funcionando pero BD con error',
+        error: err.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    res.json({
+      status: 'Servidor y BD funcionando correctamente',
+      timestamp: new Date().toISOString(),
+      base_datos: 'prueba_pepsi'
+    });
+  });
+});
+
+// 👥 ENDPOINT PARA OBTENER EMPLEADOS
+app.get('/api/empleados', (req, res) => {
+  db.query('SELECT rut, nombre, cargo, region, usuario FROM empleados', (err, results) => {
+    if (err) {
+      console.error('Error al obtener empleados:', err);
+      return res.status(500).json({ error: 'Error en la consulta' });
+    }
+    res.json(results);
+  });
+});
+
 //Ejemplo de ruta que lee datos desde MySQL
 app.get('/api/empleados', (req, res) => {
   db.query('SELECT * FROM empleados', (err, results) => {
@@ -66,7 +147,15 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-
+// Escuchar en todas las interfaces de red
+app.listen(port, '0.0.0.0', () => {
+  console.log(`🎉 Servidor iniciado en http://localhost:${port}`);
+  console.log(`🌐 También accesible en la red local`);
+  console.log(`📋 Endpoints disponibles:`);
+  console.log(`   POST http://179.60.66.44:${port}/api/login`);
+  console.log(`   GET  http://179.60.66.44:${port}/api/status`);
+  console.log(`   GET  http://179.60.66.44:${port}/api/empleados`);
+});
 
 
 //Inicia el servidor
