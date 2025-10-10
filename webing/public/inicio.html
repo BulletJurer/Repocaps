@@ -140,11 +140,21 @@
         <div class="col-md-6">
           <table class="table table-sm">
             <tr><td><strong>Horario:</strong></td><td>${empleado.horario}</td></tr>
-            <tr><td><strong>Disponibilidad:</strong></td><td><span class="badge ${getBadgeClass(empleado.disponibilidad)}">${empleado.disponibilidad}</span></td></tr>
+            <tr><td><strong>Disponibilidad:</strong></td><td><span class="badge ${getBadgeClass(mapDisponibilidad(empleado.disponibilidad))}">${empleado.disponibilidad}</span></td></tr>
             <tr><td><strong>Usuario:</strong></td><td>${empleado.usuario}</td></tr>
           </table>
         </div>`;
     }
+
+    function mapDisponibilidad(value) {
+        switch(value) {
+            case 1: return "disponible";
+            case 2: return "ocupado";
+            case 3: return "ausente";
+            default: return "desconocido";
+        }
+        }
+
 
     function getBadgeClass(d) {
       if (!d) return "badge-secondary"; // si es null/undefined
