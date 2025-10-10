@@ -105,6 +105,9 @@
     document.addEventListener("DOMContentLoaded", () => {
       const usuarioData = localStorage.getItem("usuario");
       const token = localStorage.getItem("token");
+      console.log("DEBUG usuarioData:", usuarioData, "token:", token);
+      console.log("DEBUG localStorage usuario:", localStorage.getItem("usuario"));
+      console.log("DEBUG localStorage token:", localStorage.getItem("token"));
 
       debug.innerHTML = `DEBUG: usuarioData = ${usuarioData}, token = ${token}`;
 

@@ -250,8 +250,10 @@
           showSuccess(`✅ Bienvenido ${empleadoData.nombre}`);
           localStorage.setItem("usuario", JSON.stringify(empleadoData));
           localStorage.setItem("token", "authenticated");
-          
-          
+
+          setTimeout(() => {
+            window.location.replace("inicio.html");
+          }, 1500);
         } else {
           showError(data.message || "Usuario o contraseña incorrectos");
         }
