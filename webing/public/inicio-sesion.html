@@ -1,301 +1,307 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Gestión de Vehículos PepsiCo Chile</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #004B93 0%, #002D62 100%);
-        }
-        .login-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 400px;
-        }
-        .loading-spinner {
-            display: none;
-        }
-        .alert {
-            display: none;
-        }
-        .logo {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        .logo h2 {
-            color: #004B93;
-            font-weight: bold;
-        }
-        .form-control:focus {
-            border-color: #004B93;
-            box-shadow: 0 0 0 0.2rem rgba(0, 75, 147, 0.25);
-        }
-        .btn-primary {
-            background-color: #004B93;
-            border-color: #004B93;
-        }
-        .btn-primary:hover {
-            background-color: #003366;
-            border-color: #003366;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Gestión de Vehículos PepsiCo Chile</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+  />
+  <style>
+    body {
+      background-color: #f8f9fa;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #004b93 0%, #002d62 100%);
+    }
+    .login-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+    }
+    .loading-spinner {
+      display: none;
+    }
+    .alert {
+      display: none;
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .logo h2 {
+      color: #004b93;
+      font-weight: bold;
+    }
+    .form-control:focus {
+      border-color: #004b93;
+      box-shadow: 0 0 0 0.2rem rgba(0, 75, 147, 0.25);
+    }
+    .btn-primary {
+      background-color: #004b93;
+      border-color: #004b93;
+    }
+    .btn-primary:hover {
+      background-color: #003366;
+      border-color: #003366;
+    }
+    #envIndicator {
+      text-align: center;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+      color: #666;
+    }
+  </style>
 </head>
+
 <body>
-    <!-- CONTENEDOR PRINCIPAL DEL LOGIN -->
-    <div class="login-container">
-        <!-- LOGO Y ENCABEZADO -->
-        <div class="logo">
-            <h2>🚗 Taller PepsiCo</h2>
-            <p class="text-muted">Sistema de Gestión de Vehículos</p>
-        </div>
-
-        <!-- ALERTA DE ERROR -->
-        <div class="alert alert-danger" id="errorAlert" role="alert">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span id="errorMessage"></span>
-        </div>
-
-        <!-- ALERTA DE ÉXITO -->
-        <div class="alert alert-success" id="successAlert" role="alert">
-            <i class="fas fa-check-circle"></i>
-            <span id="successMessage"></span>
-        </div>
-        
-        <!-- FORMULARIO DE LOGIN -->
-        <form id="loginForm">
-            <!-- CAMPO USUARIO -->
-            <div class="mb-3">
-                <label for="usuario" class="form-label">
-                    <i class="fas fa-user"></i> Usuario
-                </label>
-                <input type="text" class="form-control" id="usuario" 
-                       placeholder="Ingresa tu usuario" maxlength="30"
-                       pattern="[a-zA-ZÑñ]+"
-                       title="Solo se permiten letras (sin números ni caracteres especiales)" required>
-            </div>
-            
-            <!-- CAMPO CONTRASEÑA -->
-            <div class="mb-3">
-                <label for="contrasena" class="form-label">
-                    <i class="fas fa-lock"></i> Contraseña
-                </label>
-                <input type="password" class="form-control" id="contrasena" 
-                       placeholder="Ingresa tu contraseña" maxlength="30"
-                       pattern="[a-zA-Z_-]{8,}" 
-                       title="Mínimo 8 caracteres. Solo letras, guiones (-) y guiones bajos (_)" required>
-            </div>
-            
-            <!-- BOTÓN DE INGRESO CON SPINNER -->
-            <div class="d-grid">
-                <button type="submit" class="btn btn-primary mb-3" id="loginButton">
-                    <span class="spinner-border spinner-border-sm loading-spinner" id="loadingSpinner"></span>
-                    <span id="buttonText">🔐 Ingresar al Sistema</span>
-                </button>
-            </div>
-            
-            <!-- ENLACE RECUPERACIÓN CONTRASEÑA -->
-            <div class="text-center">
-                <a href="#" class="text-decoration-none text-muted">
-                    <small>¿Olvidaste tu contraseña?</small>
-                </a>
-            </div>
-
-            <!-- INFORMACIÓN DE DEBUG (solo en desarrollo) -->
-            <div class="mt-4 p-3 bg-light rounded small">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong>Estado del servidor:</strong>
-                    <span id="serverStatus" class="badge bg-secondary">Verificando...</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <strong>Base de datos:</strong>
-                    <span id="dbStatus" class="badge bg-secondary">Conectando...</span>
-                </div>
-            </div>
-        </form>
+  <!-- CONTENEDOR PRINCIPAL DEL LOGIN -->
+  <div class="login-container">
+    <!-- LOGO Y ENCABEZADO -->
+    <div class="logo">
+      <h2>🚗 Taller PepsiCo</h2>
+      <p class="text-muted">Sistema de Gestión de Vehículos</p>
     </div>
 
-    <!-- SCRIPTS JAVASCRIPT -->
-    <script>
-        // Elementos del DOM
-        const loginForm = document.getElementById('loginForm');
-        const loginButton = document.getElementById('loginButton');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const buttonText = document.getElementById('buttonText');
-        const errorAlert = document.getElementById('errorAlert');
-        const errorMessage = document.getElementById('errorMessage');
-        const successAlert = document.getElementById('successAlert');
-        const successMessage = document.getElementById('successMessage');
-        const serverStatus = document.getElementById('serverStatus');
-        const dbStatus = document.getElementById('dbStatus');
+    <!-- ALERTA DE ERROR -->
+    <div class="alert alert-danger" id="errorAlert" role="alert">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span id="errorMessage"></span>
+    </div>
 
-        // URL base del servidor
-        const API_BASE_URL = 'http://localhost:3000';
+    <!-- ALERTA DE ÉXITO -->
+    <div class="alert alert-success" id="successAlert" role="alert">
+      <i class="fas fa-check-circle"></i>
+      <span id="successMessage"></span>
+    </div>
 
-        // Verificar estado del servidor al cargar la página
-        document.addEventListener('DOMContentLoaded', function() {
-            checkServerStatus();
-            checkDatabaseStatus();
+    <!-- FORMULARIO DE LOGIN -->
+    <form id="loginForm">
+      <!-- CAMPO USUARIO -->
+      <div class="mb-3">
+        <label for="usuario" class="form-label">
+          <i class="fas fa-user"></i> Usuario
+        </label>
+        <input
+          type="text"
+          class="form-control"
+          id="usuario"
+          placeholder="Ingresa tu usuario"
+          maxlength="30"
+          pattern="[a-zA-ZÑñ]+"
+          title="Solo se permiten letras (sin números ni caracteres especiales)"
+          required
+        />
+      </div>
+
+      <!-- CAMPO CONTRASEÑA -->
+      <div class="mb-3">
+        <label for="contrasena" class="form-label">
+          <i class="fas fa-lock"></i> Contraseña
+        </label>
+        <input
+          type="password"
+          class="form-control"
+          id="contrasena"
+          placeholder="Ingresa tu contraseña"
+          maxlength="30"
+          required
+        />
+      </div>
+
+      <!-- BOTÓN DE INGRESO CON SPINNER -->
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary mb-3" id="loginButton">
+          <span
+            class="spinner-border spinner-border-sm loading-spinner"
+            id="loadingSpinner"
+          ></span>
+          <span id="buttonText">🔐 Ingresar al Sistema</span>
+        </button>
+      </div>
+
+      <!-- ENLACE RECUPERACIÓN CONTRASEÑA -->
+      <div class="text-center">
+        <a href="#" class="text-decoration-none text-muted">
+          <small>¿Olvidaste tu contraseña?</small>
+        </a>
+      </div>
+
+      <!-- INFORMACIÓN DE DEBUG (solo en desarrollo) -->
+      <div class="mt-4 p-3 bg-light rounded small">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <strong>Estado del servidor:</strong>
+          <span id="serverStatus" class="badge bg-secondary">Verificando...</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <strong>Base de datos:</strong>
+          <span id="dbStatus" class="badge bg-secondary">Conectando...</span>
+        </div>
+      </div>
+      <div id="envIndicator"></div>
+    </form>
+  </div>
+
+  <!-- SCRIPT PRINCIPAL -->
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const loginButton = document.getElementById("loginButton");
+    const loadingSpinner = document.getElementById("loadingSpinner");
+    const buttonText = document.getElementById("buttonText");
+    const errorAlert = document.getElementById("errorAlert");
+    const errorMessage = document.getElementById("errorMessage");
+    const successAlert = document.getElementById("successAlert");
+    const successMessage = document.getElementById("successMessage");
+    const serverStatus = document.getElementById("serverStatus");
+    const dbStatus = document.getElementById("dbStatus");
+    const envIndicator = document.getElementById("envIndicator");
+
+    // 🔍 DETECCIÓN AUTOMÁTICA DE ENTORNO
+    const isLocal =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
+    const API_BASE_URL = isLocal
+      ? "http://localhost:3000"
+      : "https://testeorepocaps.loca.lt";
+
+    envIndicator.innerHTML = isLocal
+      ? "🌐 Entorno local activo"
+      : "🚀 Conectado al túnel remoto";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      checkServerStatus();
+      checkDatabaseStatus();
+    });
+
+    async function checkServerStatus() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/status`);
+        if (response.ok) {
+          const data = await response.json();
+          serverStatus.textContent = "Conectado";
+          serverStatus.className = "badge bg-success";
+          dbStatus.textContent = data.base_datos || "Conectada";
+          dbStatus.className = "badge bg-success";
+        } else {
+          throw new Error("Servidor no responde correctamente");
+        }
+      } catch (error) {
+        console.error("❌ Error conectando al servidor:", error);
+        serverStatus.textContent = "Desconectado";
+        serverStatus.className = "badge bg-danger";
+        dbStatus.textContent = "Error";
+        dbStatus.className = "badge bg-danger";
+        showError("No se puede conectar al servidor. Verifica la conexión.");
+      }
+    }
+
+    async function checkDatabaseStatus() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/empleados`);
+        if (response.ok) {
+          const empleados = await response.json();
+          dbStatus.textContent = `${empleados.length} empleados`;
+          dbStatus.className = "badge bg-success";
+        }
+      } catch (error) {
+        console.error("❌ Error verificando base de datos:", error);
+        dbStatus.textContent = "Error BD";
+        dbStatus.className = "badge bg-danger";
+      }
+    }
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorAlert.style.display = "block";
+      successAlert.style.display = "none";
+    }
+
+    function showSuccess(message) {
+      successMessage.textContent = message;
+      successAlert.style.display = "block";
+      errorAlert.style.display = "none";
+    }
+
+    function hideAlerts() {
+      errorAlert.style.display = "none";
+      successAlert.style.display = "none";
+    }
+
+    function setLoading(isLoading) {
+      if (isLoading) {
+        loadingSpinner.style.display = "inline-block";
+        buttonText.textContent = " Verificando...";
+        loginButton.disabled = true;
+      } else {
+        loadingSpinner.style.display = "none";
+        buttonText.textContent = "🔐 Ingresar al Sistema";
+        loginButton.disabled = false;
+      }
+    }
+
+    loginForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const usuario = document.getElementById("usuario").value;
+      const contrasena = document.getElementById("contrasena").value;
+      if (!usuario || !contrasena) {
+        showError("Por favor complete todos los campos");
+        return;
+      }
+      hideAlerts();
+      setLoading(true);
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ usuario, contrasena }),
         });
-
-        // FUNCIÓN PARA VERIFICAR ESTADO DEL SERVIDOR
-        async function checkServerStatus() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/status`);
-                if (response.ok) {
-                    const data = await response.json();
-                    serverStatus.textContent = 'Conectado';
-                    serverStatus.className = 'badge bg-success';
-                    dbStatus.textContent = data.base_datos;
-                    dbStatus.className = 'badge bg-success';
-                } else {
-                    throw new Error('Servidor no responde correctamente');
-                }
-            } catch (error) {
-                console.error('❌ Error conectando al servidor:', error);
-                serverStatus.textContent = 'Desconectado';
-                serverStatus.className = 'badge bg-danger';
-                dbStatus.textContent = 'Error';
-                dbStatus.className = 'badge bg-danger';
-                showError('No se puede conectar al servidor. Verifica que el servidor esté ejecutándose.');
-            }
+        const data = await response.json();
+        if (data.success) {
+          showSuccess(`✅ Bienvenido ${data.empleado.nombre}`);
+          localStorage.setItem("usuario", JSON.stringify(data.empleado));
+          localStorage.setItem("token", "authenticated");
+          setTimeout(() => {
+            window.location.href = "inicio.html";
+          }, 1500);
+        } else {
+          showError(data.message || "Usuario o contraseña incorrectos");
         }
+      } catch (error) {
+        console.error("❌ Error en la petición:", error);
+        showError("Error de conexión. Verifica el servidor.");
+      } finally {
+        setLoading(false);
+      }
+    });
 
-        // FUNCIÓN PARA VERIFICAR ESTADO DE LA BASE DE DATOS
-        async function checkDatabaseStatus() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/empleados`);
-                if (response.ok) {
-                    const empleados = await response.json();
-                    dbStatus.textContent = `${empleados.length} empleados`;
-                    dbStatus.className = 'badge bg-success';
-                }
-            } catch (error) {
-                console.error('❌ Error verificando base de datos:', error);
-                dbStatus.textContent = 'Error BD';
-                dbStatus.className = 'badge bg-danger';
-            }
+    document
+      .getElementById("usuario")
+      .addEventListener("input", function (e) {
+        this.value = this.value.replace(/[^a-zA-ZÑñ]/g, "");
+      });
+
+    document.getElementById("usuario").addEventListener("focus", hideAlerts);
+    document.getElementById("contrasena").addEventListener("focus", hideAlerts);
+
+    document
+      .getElementById("contrasena")
+      .addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          loginForm.dispatchEvent(new Event("submit"));
         }
+      });
+  </script>
 
-        // FUNCIÓN PARA MOSTRAR ERROR
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorAlert.style.display = 'block';
-            successAlert.style.display = 'none';
-        }
-
-        // FUNCIÓN PARA MOSTRAR ÉXITO
-        function showSuccess(message) {
-            successMessage.textContent = message;
-            successAlert.style.display = 'block';
-            errorAlert.style.display = 'none';
-        }
-
-        // FUNCIÓN PARA OCULTAR ALERTAS
-        function hideAlerts() {
-            errorAlert.style.display = 'none';
-            successAlert.style.display = 'none';
-        }
-
-        // FUNCIÓN PARA MOSTRAR/OCULTAR LOADING
-        function setLoading(isLoading) {
-            if (isLoading) {
-                loadingSpinner.style.display = 'inline-block';
-                buttonText.textContent = ' Verificando...';
-                loginButton.disabled = true;
-            } else {
-                loadingSpinner.style.display = 'none';
-                buttonText.textContent = '🔐 Ingresar al Sistema';
-                loginButton.disabled = false;
-            }
-        }
-
-        // VALIDACIÓN DEL FORMULARIO DE LOGIN
-        loginForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const usuario = document.getElementById('usuario').value;
-            const contrasena = document.getElementById('contrasena').value;
-            
-            // Validaciones básicas del frontend
-            if (!usuario || !contrasena) {
-                showError('Por favor complete todos los campos');
-                return;
-            }
-
-            // Ocultar alertas anteriores
-            hideAlerts();
-            
-            // Mostrar estado de carga
-            setLoading(true);
-
-            try {
-                // Realizar petición al servidor
-                const response = await fetch(`${API_BASE_URL}/api/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        usuario: usuario,
-                        contrasena: contrasena
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showSuccess(`✅ Bienvenido ${data.empleado.nombre}`);
-                    
-                    // Guardar datos del empleado en localStorage
-                    localStorage.setItem('usuario', JSON.stringify(data.empleado));
-                    localStorage.setItem('token', 'authenticated');
-                    
-                    // Redirigir al dashboard después de un breve delay
-                    setTimeout(() => {
-                        window.location.href = 'inicio.html';
-                    }, 1500);
-                    
-                } else {
-                    showError(data.message || 'Error en la autenticación');
-                }
-
-            } catch (error) {
-                console.error('❌ Error en la petición:', error);
-                showError('Error de conexión. Verifica que el servidor esté funcionando.');
-            } finally {
-                setLoading(false);
-            }
-        });
-
-        // Validación en tiempo real del campo usuario
-        document.getElementById('usuario').addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^a-zA-ZÑñ]/g, '');
-        });
-
-        // Limpiar errores al empezar a escribir
-        document.getElementById('usuario').addEventListener('focus', hideAlerts);
-        document.getElementById('contrasena').addEventListener('focus', hideAlerts);
-
-        // Permitir login con Enter
-        document.getElementById('contrasena').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                loginForm.dispatchEvent(new Event('submit'));
-            }
-        });
-    </script>
-
-    <!-- Iconos de Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
