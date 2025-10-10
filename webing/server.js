@@ -96,7 +96,7 @@ app.get('/api/empleados', (req, res) => {
 });
 
 //Ejemplo de ruta que lee datos desde MySQL
-app.get('/api/empleados', (req, res) => {
+app.get('/api/empleados1', (req, res) => {
   db.query('SELECT * FROM empleados', (err, results) => {
     if (err) {
       console.error('Error al consultar MySQL:', err);
