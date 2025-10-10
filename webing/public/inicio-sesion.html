@@ -120,9 +120,6 @@
                     <strong>Base de datos:</strong>
                     <span id="dbStatus" class="badge bg-secondary">Conectando...</span>
                 </div>
-                <div class="mt-2 text-center">
-                    <small class="text-muted" id="connectionInfo"></small>
-                </div>
             </div>
         </form>
     </div>
@@ -140,17 +137,12 @@
         const successMessage = document.getElementById('successMessage');
         const serverStatus = document.getElementById('serverStatus');
         const dbStatus = document.getElementById('dbStatus');
-        const connectionInfo = document.getElementById('connectionInfo');
 
-        // URL DEL SERVIDOR - CAMBIA ESTA IP POR LA DE TU COMPUTADORA
-        const API_BASE_URL = 'http://localhost:3000'; 
-
-        // Mostrar información de conexión
-        connectionInfo.textContent = `Conectando a: ${API_BASE_URL}`;
+        // URL base del servidor
+        const API_BASE_URL = 'http://localhost:3000';
 
         // Verificar estado del servidor al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🔗 Intentando conectar a:', API_BASE_URL);
             checkServerStatus();
             checkDatabaseStatus();
         });
@@ -158,26 +150,23 @@
         // FUNCIÓN PARA VERIFICAR ESTADO DEL SERVIDOR
         async function checkServerStatus() {
             try {
-                console.log('🩺 Verificando servidor en:', `${API_BASE_URL}/api/status`);
                 const response = await fetch(`${API_BASE_URL}/api/status`);
-                
                 if (response.ok) {
                     const data = await response.json();
                     serverStatus.textContent = 'Conectado';
                     serverStatus.className = 'badge bg-success';
-                    dbStatus.textContent = data.base_datos || 'Conectada';
+                    dbStatus.textContent = data.base_datos;
                     dbStatus.className = 'badge bg-success';
-                    console.log('✅ Servidor conectado correctamente');
                 } else {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    throw new Error('Servidor no responde correctamente');
                 }
             } catch (error) {
                 console.error('❌ Error conectando al servidor:', error);
                 serverStatus.textContent = 'Desconectado';
                 serverStatus.className = 'badge bg-danger';
-                dbStatus.textContent = 'Error conexión';
+                dbStatus.textContent = 'Error';
                 dbStatus.className = 'badge bg-danger';
-                showError(`No se puede conectar al servidor: ${error.message}`);
+                showError('No se puede conectar al servidor. Verifica que el servidor esté ejecutándose.');
             }
         }
 
