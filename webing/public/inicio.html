@@ -6,85 +6,24 @@
   <title>Inicio - Gestión de Vehículos</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .sidebar {
-      background-color: #004B93;
-      color: white;
-      height: 100vh;
-      position: fixed;
-      width: 250px;
-    }
-    .sidebar .nav-link {
-      color: white;
-      padding: 15px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .sidebar .nav-link:hover {
-      background-color: #003366;
-    }
-    .sidebar .nav-link.active {
-      background-color: #003366 !important;
-      border-left: 4px solid #FFC72C;
-    }
-    .main-content {
-      margin-left: 250px;
-      padding: 20px;
-    }
-    .welcome-card {
-      background: linear-gradient(135deg, #004B93 0%, #002D62 100%);
-      color: white;
-      border-radius: 10px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-    .feature-card {
-      border: none;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      transition: transform 0.3s;
-    }
-    .feature-card:hover {
-      transform: translateY(-5px);
-    }
-    .stats-card {
-      background: white;
-      border-radius: 10px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    .stat-number {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #004B93;
-      margin-bottom: 0.5rem;
-    }
-    .stat-label {
-      color: #6c757d;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-    .info-empleado-card {
-      border-left: 4px solid #004B93;
-    }
-    .badge-disponible {
-      background-color: #28a745;
-    }
-    .badge-ocupado {
-      background-color: #ffc107;
-      color: #000;
-    }
-    .badge-ausente {
-      background-color: #dc3545;
-    }
-    #envIndicator {
-      font-size: 0.8rem;
-      color: #666;
-      margin-left: 10px;
-    }
+    body { background-color: #f8f9fa; }
+    .sidebar { background-color: #004B93; color: white; height: 100vh; position: fixed; width: 250px; }
+    .sidebar .nav-link { color: white; padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar .nav-link:hover { background-color: #003366; }
+    .sidebar .nav-link.active { background-color: #003366 !important; border-left: 4px solid #FFC72C; }
+    .main-content { margin-left: 250px; padding: 20px; }
+    .welcome-card { background: linear-gradient(135deg, #004B93 0%, #002D62 100%); color: white; border-radius: 10px; padding: 2rem; margin-bottom: 2rem; }
+    .feature-card { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s; }
+    .feature-card:hover { transform: translateY(-5px); }
+    .stats-card { background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; margin-bottom: 1rem; }
+    .stat-number { font-size: 2.5rem; font-weight: bold; color: #004B93; margin-bottom: 0.5rem; }
+    .stat-label { color: #6c757d; font-size: 0.9rem; font-weight: 500; }
+    .info-empleado-card { border-left: 4px solid #004B93; }
+    .badge-disponible { background-color: #28a745; }
+    .badge-ocupado { background-color: #ffc107; color: #000; }
+    .badge-ausente { background-color: #dc3545; }
+    #envIndicator { font-size: 0.8rem; color: #666; margin-left: 10px; }
+    #debug { font-size: 0.8rem; color: #444; margin-top: 10px; background: #f1f1f1; padding: 5px; border-radius: 5px; }
   </style>
 </head>
 <body>
@@ -117,7 +56,6 @@
       <p class="mb-0">Sistema de Gestión de Vehículos - Taller PepsiCo Chile</p>
     </div>
 
-    <!-- INFORMACIÓN DEL EMPLEADO -->
     <div class="card info-empleado-card feature-card mb-4">
       <div class="card-body">
         <h5 class="card-title">👤 Mi Información</h5>
@@ -125,7 +63,6 @@
       </div>
     </div>
 
-    <!-- ESTADÍSTICAS -->
     <div class="row mb-4">
       <div class="col-md-3"><div class="stats-card"><div class="stat-number" id="statVehiculos">0</div><div class="stat-label">Vehículos Totales</div></div></div>
       <div class="col-md-3"><div class="stats-card"><div class="stat-number" id="statTaller">0</div><div class="stat-label">En Taller</div></div></div>
@@ -133,7 +70,6 @@
       <div class="col-md-3"><div class="stats-card"><div class="stat-number" id="statEmpleados">0</div><div class="stat-label">Empleados Activos</div></div></div>
     </div>
 
-    <!-- ACCESOS RÁPIDOS -->
     <div class="row">
       <div class="col-md-6 mb-4">
         <div class="card feature-card h-100">
@@ -155,41 +91,25 @@
       </div>
     </div>
 
-    <!-- ACTIVIDAD RECIENTE -->
-    <div class="card feature-card">
-      <div class="card-body">
-        <h5 class="card-title mb-4">📈 Actividad Reciente</h5>
-        <div class="list-group" id="actividadReciente">
-          <div class="list-group-item">
-            <div class="d-flex w-100 justify-content-between">
-              <h6 class="mb-1">Sistema iniciado correctamente</h6>
-              <small>Justo ahora</small>
-            </div>
-            <p class="mb-1">Bienvenido al sistema de gestión del taller</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div id="debug"></div> <!-- debug localStorage -->
   </div>
 
-  <!-- SCRIPTS -->
   <script>
     // 🔍 DETECCIÓN AUTOMÁTICA DE ENTORNO
-    const isLocal =
-      window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1";
-    const API_BASE_URL = isLocal
-      ? "http://localhost:3000"
-      : "https://testeorepocaps.loca.lt";
+    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    const API_BASE_URL = isLocal ? "http://localhost:3000" : "https://testeorepocaps.loca.lt";
     const envIndicator = document.getElementById("envIndicator");
-    envIndicator.textContent = isLocal
-      ? "🌐 Entorno local activo"
-      : "🚀 Conectado al túnel remoto";
+    const debug = document.getElementById("debug");
+    envIndicator.textContent = isLocal ? "🌐 Entorno local activo" : "🚀 Conectado al túnel remoto";
 
-    // 🚀 INICIALIZACIÓN
     document.addEventListener("DOMContentLoaded", () => {
       const usuarioData = localStorage.getItem("usuario");
-      if (!usuarioData) {
+      const token = localStorage.getItem("token");
+
+      debug.innerHTML = `DEBUG: usuarioData = ${usuarioData}, token = ${token}`;
+
+      if (!usuarioData || token !== "authenticated") {
+        console.warn("Redirigiendo al login porque no hay usuario o token inválido");
         window.location.href = "inicio-sesion.html";
         return;
       }
@@ -204,7 +124,6 @@
       }
     });
 
-    // 👤 ACTUALIZA DATOS DEL EMPLEADO
     function actualizarInterfazEmpleado(empleado) {
       document.getElementById("welcomeTitle").textContent = `Bienvenido, ${empleado.nombre}`;
       document.getElementById("empleadoInfo").innerHTML = `
@@ -225,7 +144,7 @@
     }
 
     function getBadgeClass(d) {
-      switch (d.toLowerCase()) {
+      switch (d?.toLowerCase()) {
         case "disponible": return "badge-disponible";
         case "ocupado": return "badge-ocupado";
         case "ausente": return "badge-ausente";
@@ -233,7 +152,6 @@
       }
     }
 
-    // 📊 CARGA ESTADÍSTICAS
     async function cargarEstadisticas() {
       try {
         const response = await fetch(`${API_BASE_URL}/api/estadisticas`);
@@ -249,7 +167,6 @@
       }
     }
 
-    // 🔒 CERRAR SESIÓN
     function cerrarSesion() {
       if (confirm("¿Deseas cerrar sesión?")) {
         localStorage.removeItem("usuario");
@@ -258,7 +175,6 @@
       }
     }
   </script>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
