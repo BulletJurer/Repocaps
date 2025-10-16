@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inicio - Gestión de Vehículos</title>
+  <title>Inicio - Gestión de Vehículos PepsiCo Chile</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
@@ -97,6 +97,10 @@
       background-color: #dc3545;
     }
 
+    .badge-desconocido {
+      background-color: #6c757d;
+    }
+
     #envIndicator {
       font-size: 0.8rem;
       color: #666;
@@ -115,7 +119,7 @@
 </head>
 
 <body>
-  <!-- BARRA LATERAL -->
+  <!-- 🧭 BARRA LATERAL -->
   <div class="sidebar">
     <div class="p-3 text-center border-bottom">
       <h5>🚗 Taller PepsiCo Chile</h5>
@@ -128,7 +132,7 @@
     </nav>
   </div>
 
-  <!-- CONTENIDO PRINCIPAL -->
+  <!-- 🧩 CONTENIDO PRINCIPAL -->
   <div class="main-content">
     <div class="row mb-4">
       <div class="col-12 text-end">
@@ -182,8 +186,7 @@
           <div class="card-body text-center">
             <h3 class="card-title">🛠️ Registro Taller</h3>
             <p class="card-text">Gestiona y visualiza todos los vehículos en el taller</p>
-            <!-- cambiar hreft -->
-            <a window.location.href="registro-taller.html" class="btn btn-primary">Ingresar</a>
+            <a href="registro-taller.html" class="btn btn-primary">Ingresar</a>
           </div>
         </div>
       </div>
@@ -192,35 +195,40 @@
           <div class="card-body text-center">
             <h3 class="card-title">🚗 Ingreso Vehículos</h3>
             <p class="card-text">Registra nuevos vehículos en el sistema</p>
-            <!-- cambiar hreft -->
-            <a window.location.href="ingreso-vehiculos.html" class="btn btn-primary">Ingresar</a>
+            <a href="ingreso-vehiculos.html" class="btn btn-primary">Ingresar</a>
           </div>
         </div>
       </div>
     </div>
 
-    <div id="debug"></div> <!-- debug localStorage -->
+    <div id="debug"></div> <!-- Debug de sesión -->
   </div>
 
   <script>
-    // 🔍 DETECCIÓN AUTOMÁTICA DE ENTORNO
-    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-    const API_BASE_URL = isLocal ? "http://localhost:3000" : "https://testeorepocaps.loca.lt";
+    // 🌐 Detección de entorno automático
+    const isLocal =
+      ["localhost", "127.0.0.1"].includes(window.location.hostname) ||
+      window.location.hostname.startsWith("192.168.");
+    const API_BASE_URL = isLocal
+      ? "http://localhost:3000"
+      : "https://testeorepocaps.loca.lt";
+
     const envIndicator = document.getElementById("envIndicator");
     const debug = document.getElementById("debug");
-    envIndicator.textContent = isLocal ? "🌐 Entorno local activo" : "🚀 Conectado al túnel remoto";
 
+    envIndicator.textContent = isLocal
+      ? "🌐 Entorno local activo"
+      : "🚀 Conectado al túnel remoto";
+
+    // 🧠 Carga inicial
     document.addEventListener("DOMContentLoaded", () => {
       const usuarioData = localStorage.getItem("usuario");
       const token = localStorage.getItem("token");
-      console.log("DEBUG usuarioData:", usuarioData, "token:", token);
-      console.log("DEBUG localStorage usuario:", localStorage.getItem("usuario"));
-      console.log("DEBUG localStorage token:", localStorage.getItem("token"));
 
       debug.innerHTML = `DEBUG: usuarioData = ${usuarioData}, token = ${token}`;
 
-      if (!usuarioData || token !== "authenticated") {
-        console.warn("Redirigiendo al login porque no hay usuario o token inválido");
+      if (!usuarioData || !token) {
+        console.warn("Redirigiendo al login por falta de sesión");
         window.location.replace("inicio-sesion.html");
         return;
       }
@@ -228,7 +236,6 @@
       try {
         const empleado = JSON.parse(usuarioData);
         actualizarInterfazEmpleado(empleado);
-        //cargarEstadisticas();  falta enpoint de estadisticas
       } catch (error) {
         console.error("Error cargando usuario:", error);
         window.location.replace("inicio-sesion.html");
@@ -248,13 +255,16 @@
         <div class="col-md-6">
           <table class="table table-sm">
             <tr><td><strong>Horario:</strong></td><td>${empleado.horario}</td></tr>
-            <tr><td><strong>Disponibilidad:</strong></td><td><span class="badge ${getBadgeClass(mapDisponibilidad(empleado.disponibilidad))}">${empleado.disponibilidad}</span></td></tr>
+            <tr><td><strong>Disponibilidad:</strong></td>
+              <td><span class="badge ${getBadgeClass(mapDisponibilidad(empleado.disponibilidad))}">
+                ${mapDisponibilidad(empleado.disponibilidad)}
+              </span></td></tr>
           </table>
         </div>`;
     }
 
     function mapDisponibilidad(value) {
-      switch (value) {
+      switch (Number(value)) {
         case 1: return "disponible";
         case 2: return "ocupado";
         case 3: return "ausente";
@@ -262,31 +272,14 @@
       }
     }
 
-
-    function getBadgeClass(d) {
-      if (!d) return "badge-desconocido"; // si es null/undefined
-      switch (d?.toLowerCase()) {
-        case 1: return "badge-disponible";
-        case 2: return "badge-ocupado";
-        case 3: return "badge-ausente";
+    function getBadgeClass(status) {
+      switch (status) {
+        case "disponible": return "badge-disponible";
+        case "ocupado": return "badge-ocupado";
+        case "ausente": return "badge-ausente";
         default: return "badge-desconocido";
       }
     }
-
-    /*async function cargarEstadisticas() {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/estadisticas`);
-        if (response.ok) {
-          const data = await response.json();
-          document.getElementById("statVehiculos").textContent = data.DEFINIR || 0;
-          document.getElementById("statTaller").textContent = data.DEFINIR || 0;
-          document.getElementById("statProceso").textContent = data.DEFINIR || 0;
-          document.getElementById("statEmpleados").textContent = data.DEFINIR || 0;
-        }
-      } catch (err) {
-        console.error("Error al cargar estadísticas:", err);
-      } 
-    }*/
 
     function cerrarSesion() {
       if (confirm("¿Deseas cerrar sesión?")) {
@@ -296,6 +289,7 @@
       }
     }
   </script>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
