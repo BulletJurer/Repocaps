@@ -225,11 +225,11 @@
       const usuarioData = localStorage.getItem("usuario");
       const token = localStorage.getItem("token");
 
-      if (window.location.hostname === "localhost") {
-  debug.innerHTML = `DEBUG: usuarioData = ${usuarioData}, token = ${token}`;
-} else {
-  debug.style.display = "none";
-}
+    if (window.location.hostname === "localhost") {
+    debug.innerHTML = `DEBUG: usuarioData = ${usuarioData}, token = ${token}`;
+    } else {
+    debug.style.display = "none";
+    }
 
       if (!usuarioData || !token) {
         console.warn("Redirigiendo al login por falta de sesión");
