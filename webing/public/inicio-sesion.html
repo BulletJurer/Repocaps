@@ -143,8 +143,9 @@
     const envIndicator = document.getElementById("envIndicator");
 
     // 🔍 Detección de entorno
-    const isLocal =
-      window.location.hostname === "localhost";
+    const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname) ||
+                window.location.hostname.startsWith("192.168.");
+
     const API_BASE_URL = isLocal
       ? "http://localhost:3000"
       : "https://testeorepocaps.loca.lt";
@@ -248,7 +249,7 @@
           }
           showSuccess(`✅ Bienvenido ${empleadoData.nombre}`);
           localStorage.setItem("usuario", JSON.stringify(empleadoData));
-          localStorage.setItem("token", "authenticated");
+          localStorage.setItem("token", data.token);
 
           setTimeout(() => {
             window.location.replace("inicio.html");
