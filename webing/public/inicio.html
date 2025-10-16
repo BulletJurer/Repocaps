@@ -228,7 +228,7 @@
       try {
         const empleado = JSON.parse(usuarioData);
         actualizarInterfazEmpleado(empleado);
-        //cargarEstadisticas();
+        //cargarEstadisticas();  falta enpoint de estadisticas
       } catch (error) {
         console.error("Error cargando usuario:", error);
         window.location.replace("inicio-sesion.html");
