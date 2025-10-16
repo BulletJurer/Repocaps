@@ -1,108 +1,34 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inicio - Gestión de Vehículos</title>
-
-  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
   <style>
-    /* Estilos generales */
-    body {
-      background-color: #f8f9fa;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      background-color: #004B93;
-      color: white;
-      height: 100vh;
-      position: fixed;
-      width: 250px;
-    }
-
-    .sidebar .nav-link {
-      color: white;
-      padding: 15px 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .sidebar .nav-link:hover,
-    .sidebar .nav-link.active {
-      background-color: #003366;
-    }
-
-    .sidebar .nav-link.active {
-      border-left: 4px solid #FFC72C;
-    }
-
-    /* Main content */
-    .main-content {
-      margin-left: 250px;
-      padding: 20px;
-    }
-
-    .welcome-card {
-      background: linear-gradient(135deg, #004B93 0%, #002D62 100%);
-      color: white;
-      border-radius: 10px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .feature-card {
-      border: none;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s;
-    }
-
-    .feature-card:hover {
-      transform: translateY(-5px);
-    }
-
-    .stats-card {
-      background: white;
-      border-radius: 10px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    .stat-number {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #004B93;
-      margin-bottom: 0.5rem;
-    }
-
-    .stat-label {
-      color: #6c757d;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-
-    .info-empleado-card {
-      border-left: 4px solid #004B93;
-    }
-
-    /* Badges de disponibilidad */
+    /* ------------------- ESTILOS ------------------- */
+    body { background-color: #f8f9fa; }
+    .sidebar { background-color: #004B93; color: white; height: 100vh; position: fixed; width: 250px; }
+    .sidebar .nav-link { color: white; padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar .nav-link:hover { background-color: #003366; }
+    .sidebar .nav-link.active { background-color: #003366 !important; border-left: 4px solid #FFC72C; }
+    .main-content { margin-left: 250px; padding: 20px; }
+    .welcome-card { background: linear-gradient(135deg, #004B93 0%, #002D62 100%); color: white; border-radius: 10px; padding: 2rem; margin-bottom: 2rem; }
+    .feature-card { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s; }
+    .feature-card:hover { transform: translateY(-5px); }
+    .stats-card { background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; margin-bottom: 1rem; }
+    .stat-number { font-size: 2.5rem; font-weight: bold; color: #004B93; margin-bottom: 0.5rem; }
+    .stat-label { color: #6c757d; font-size: 0.9rem; font-weight: 500; }
+    .info-empleado-card { border-left: 4px solid #004B93; }
     .badge-disponible { background-color: #28a745; }
     .badge-ocupado { background-color: #ffc107; color: #000; }
     .badge-ausente { background-color: #dc3545; }
-
-    /* Indicadores de entorno y debug */
+    .badge-desconocido { background-color: #6c757d; color: #fff; }
     #envIndicator { font-size: 0.8rem; color: #666; margin-left: 10px; }
-    #debug { font-size: 0.8rem; color: #444; margin-top: 10px; background: #f1f1f1; padding: 5px; border-radius: 5px; display: none; }
   </style>
 </head>
-
 <body>
-  <!-- BARRA LATERAL -->
+  <!-- ------------------- BARRA LATERAL ------------------- -->
   <div class="sidebar">
     <div class="p-3 text-center border-bottom">
       <h5>🚗 Taller PepsiCo Chile</h5>
@@ -115,12 +41,11 @@
     </nav>
   </div>
 
-  <!-- CONTENIDO PRINCIPAL -->
+  <!-- ------------------- CONTENIDO PRINCIPAL ------------------- -->
   <div class="main-content">
-    <!-- Botón cerrar sesión y entorno -->
     <div class="row mb-4">
       <div class="col-12 text-end">
-        <button class="btn btn-outline-danger" onclick="cerrarSesion()">🔒 Cerrar Sesión</button>
+        <button class="btn btn-outline-danger" id="btnCerrarSesion">🔒 Cerrar Sesión</button>
         <span id="envIndicator"></span>
       </div>
     </div>
@@ -139,97 +64,49 @@
       </div>
     </div>
 
-    <!-- Estadísticas generales -->
+    <!-- Estadísticas -->
     <div class="row mb-4">
-      <div class="col-md-3">
-        <div class="stats-card">
-          <div class="stat-number" id="statVehiculos">0</div>
-          <div class="stat-label">Vehículos Totales</div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stats-card">
-          <div class="stat-number" id="statTaller">0</div>
-          <div class="stat-label">En Taller</div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stats-card">
-          <div class="stat-number" id="statProceso">0</div>
-          <div class="stat-label">En Proceso</div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stats-card">
-          <div class="stat-number" id="statEmpleados">0</div>
-          <div class="stat-label">Empleados Activos</div>
-        </div>
-      </div>
+      <div class="col-md-3"><div class="stats-card"><div class="stat-number" id="statVehiculos">0</div><div class="stat-label">Vehículos Totales</div></div></div>
+      <div class="col-md-3"><div class="stats-card"><div class="stat-number" id="statTaller">0</div><div class="stat-label">En Taller</div></div></div>
+      <div class="col-md-3"><div class="stats-card"><div class="stat-number" id="statProceso">0</div><div class="stat-label">En Proceso</div></div></div>
+      <div class="col-md-3"><div class="stats-card"><div class="stat-number" id="statEmpleados">0</div><div class="stat-label">Empleados Activos</div></div></div>
     </div>
-
-    <!-- Funciones rápidas -->
-    <div class="row">
-      <div class="col-md-6 mb-4">
-        <div class="card feature-card h-100">
-          <div class="card-body text-center">
-            <h3 class="card-title">🛠️ Registro Taller</h3>
-            <p class="card-text">Gestiona y visualiza todos los vehículos en el taller</p>
-            <a href="registro-taller.html" class="btn btn-primary">Ingresar</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 mb-4">
-        <div class="card feature-card h-100">
-          <div class="card-body text-center">
-            <h3 class="card-title">🚗 Ingreso Vehículos</h3>
-            <p class="card-text">Registra nuevos vehículos en el sistema</p>
-            <a href="ingreso-vehiculos.html" class="btn btn-primary">Ingresar</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Debug (solo local) -->
-    <div id="debug"></div>
   </div>
 
-  <script>
-    // 🔹 Detección de entorno
-    const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname) || window.location.hostname.startsWith("192.168.");
-    const API_BASE_URL = isLocal ? "http://localhost:3000" : "https://testeorepocaps.loca.lt";
+  <!-- ------------------- SCRIPTS ------------------- -->
+  <script type="module">
+    import { API_BASE_URL } from './js/api.js';
+
     const envIndicator = document.getElementById("envIndicator");
-    const debug = document.getElementById("debug");
+    const welcomeTitle = document.getElementById("welcomeTitle");
+    const empleadoInfo = document.getElementById("empleadoInfo");
+    const btnCerrarSesion = document.getElementById("btnCerrarSesion");
 
+    // ------------------- DETECCIÓN DE ENTORNO ------------------- //
+    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
     envIndicator.textContent = isLocal ? "🌐 Entorno local activo" : "🚀 Conectado al túnel remoto";
-    if (isLocal) debug.style.display = "block";
 
+    // ------------------- VERIFICAR USUARIO LOGEADO ------------------- //
     document.addEventListener("DOMContentLoaded", () => {
-      // 🔹 Obtener usuario y token de localStorage
       const usuarioData = localStorage.getItem("usuario");
       const token = localStorage.getItem("token");
 
-      debug.innerHTML = `DEBUG: usuarioData = ${usuarioData}, token = ${token}`;
-
       if (!usuarioData || token !== "authenticated") {
-        console.warn("Redirigiendo al login: usuario no autenticado");
         window.location.replace("inicio-sesion.html");
         return;
       }
 
-      try {
-        const empleado = JSON.parse(usuarioData);
-        actualizarInterfazEmpleado(empleado);
-        // cargarEstadisticas(); // activar cuando existan endpoints
-      } catch (err) {
-        console.error("Error cargando usuario:", err);
-        window.location.replace("inicio-sesion.html");
-      }
+      const empleado = JSON.parse(usuarioData);
+      actualizarInterfazEmpleado(empleado);
+
+      // Aquí se pueden agregar llamadas a la API para estadísticas
+      // cargarEstadisticas(); // pendiente
     });
 
-    // 🔹 Función para actualizar info del empleado
+    // ------------------- FUNCIONES ------------------- //
     function actualizarInterfazEmpleado(empleado) {
-      document.getElementById("welcomeTitle").textContent = `Bienvenido, ${empleado.nombre}`;
-      document.getElementById("empleadoInfo").innerHTML = `
+      welcomeTitle.textContent = `Bienvenido, ${empleado.nombre}`;
+      empleadoInfo.innerHTML = `
         <div class="col-md-6">
           <table class="table table-sm">
             <tr><td><strong>RUT:</strong></td><td>${empleado.rut}</td></tr>
@@ -245,37 +122,35 @@
         </div>`;
     }
 
-    // 🔹 Mapear disponibilidad numérica a texto
     function mapDisponibilidad(value) {
       switch (value) {
-        case 1: return "disponible";
-        case 2: return "ocupado";
-        case 3: return "ausente";
-        default: return "desconocido";
+        case 1: return "Disponible";
+        case 2: return "Ocupado";
+        case 3: return "Ausente";
+        default: return "Desconocido";
       }
     }
 
-    // 🔹 Obtener clase de badge según disponibilidad
-    function getBadgeClass(d) {
-      switch (d) {
-        case 1: return "badge-disponible";
-        case 2: return "badge-ocupado";
-        case 3: return "badge-ausente";
+    function getBadgeClass(value) {
+      switch (value?.toLowerCase()) {
+        case "disponible": return "badge-disponible";
+        case "ocupado": return "badge-ocupado";
+        case "ausente": return "badge-ausente";
         default: return "badge-desconocido";
       }
     }
 
-    // 🔹 Cerrar sesión
-    function cerrarSesion() {
+    // ------------------- CERRAR SESIÓN ------------------- //
+    btnCerrarSesion.addEventListener("click", () => {
       if (confirm("¿Deseas cerrar sesión?")) {
         localStorage.removeItem("usuario");
         localStorage.removeItem("token");
         window.location.href = "inicio-sesion.html";
       }
-    }
+    });
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
+
