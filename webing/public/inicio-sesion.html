@@ -144,8 +144,7 @@
 
     // 🔍 Detección de entorno
     const isLocal =
-      window.location.hostname === "localhost" ||
-      window.location.hostname === "152.230.114.2";
+      window.location.hostname === "localhost";
     const API_BASE_URL = isLocal
       ? "http://localhost:3000"
       : "https://testeorepocaps.loca.lt";

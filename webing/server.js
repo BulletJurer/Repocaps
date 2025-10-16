@@ -27,7 +27,7 @@ app.post('/api/login', (req, res) => {
     });
   }
 
-  const query = 'SELECT * FROM empleados WHERE usuario = ? AND contrasena = ?';
+  const query = 'SELECT usuario, contrasena FROM empleados WHERE usuario = ? AND contrasena = ?';
 
   db.query(query, [usuario, contrasena], (err, results) => {
     if (err) {
@@ -90,18 +90,6 @@ app.get('/api/empleados', (req, res) => {
     if (err) {
       console.error('Error al obtener empleados:', err);
       return res.status(500).json({ error: 'Error en la consulta' });
-    }
-    res.json(results);
-  });
-});
-
-//Ejemplo de ruta que lee datos desde MySQL
-app.get('/api/empleados1', (req, res) => {
-  db.query('SELECT * FROM empleados', (err, results) => {
-    if (err) {
-      console.error('Error al consultar MySQL:', err);
-      res.status(500).send('Error en la consulta');
-      return;
     }
     res.json(results);
   });
