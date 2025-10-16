@@ -4,13 +4,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inicio - Gestión de Vehículos PepsiCo Chile</title>
+  <title>Inicio - Gestión de Vehículos</title>
+
+  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
+    /* Estilos generales */
     body {
       background-color: #f8f9fa;
     }
 
+    /* Sidebar */
     .sidebar {
       background-color: #004B93;
       color: white;
@@ -25,15 +30,16 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .sidebar .nav-link:hover {
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
       background-color: #003366;
     }
 
     .sidebar .nav-link.active {
-      background-color: #003366 !important;
       border-left: 4px solid #FFC72C;
     }
 
+    /* Main content */
     .main-content {
       margin-left: 250px;
       padding: 20px;
@@ -84,42 +90,19 @@
       border-left: 4px solid #004B93;
     }
 
-    .badge-disponible {
-      background-color: #28a745;
-    }
+    /* Badges de disponibilidad */
+    .badge-disponible { background-color: #28a745; }
+    .badge-ocupado { background-color: #ffc107; color: #000; }
+    .badge-ausente { background-color: #dc3545; }
 
-    .badge-ocupado {
-      background-color: #ffc107;
-      color: #000;
-    }
-
-    .badge-ausente {
-      background-color: #dc3545;
-    }
-
-    .badge-desconocido {
-      background-color: #6c757d;
-    }
-
-    #envIndicator {
-      font-size: 0.8rem;
-      color: #666;
-      margin-left: 10px;
-    }
-
-    #debug {
-      font-size: 0.8rem;
-      color: #444;
-      margin-top: 10px;
-      background: #f1f1f1;
-      padding: 5px;
-      border-radius: 5px;
-    }
+    /* Indicadores de entorno y debug */
+    #envIndicator { font-size: 0.8rem; color: #666; margin-left: 10px; }
+    #debug { font-size: 0.8rem; color: #444; margin-top: 10px; background: #f1f1f1; padding: 5px; border-radius: 5px; display: none; }
   </style>
 </head>
 
 <body>
-  <!-- 🧭 BARRA LATERAL -->
+  <!-- BARRA LATERAL -->
   <div class="sidebar">
     <div class="p-3 text-center border-bottom">
       <h5>🚗 Taller PepsiCo Chile</h5>
@@ -132,8 +115,9 @@
     </nav>
   </div>
 
-  <!-- 🧩 CONTENIDO PRINCIPAL -->
+  <!-- CONTENIDO PRINCIPAL -->
   <div class="main-content">
+    <!-- Botón cerrar sesión y entorno -->
     <div class="row mb-4">
       <div class="col-12 text-end">
         <button class="btn btn-outline-danger" onclick="cerrarSesion()">🔒 Cerrar Sesión</button>
@@ -141,11 +125,13 @@
       </div>
     </div>
 
+    <!-- Tarjeta de bienvenida -->
     <div class="welcome-card">
       <h1 id="welcomeTitle">Bienvenido</h1>
       <p class="mb-0">Sistema de Gestión de Vehículos - Taller PepsiCo Chile</p>
     </div>
 
+    <!-- Información del empleado -->
     <div class="card info-empleado-card feature-card mb-4">
       <div class="card-body">
         <h5 class="card-title">👤 Mi Información</h5>
@@ -153,6 +139,7 @@
       </div>
     </div>
 
+    <!-- Estadísticas generales -->
     <div class="row mb-4">
       <div class="col-md-3">
         <div class="stats-card">
@@ -180,6 +167,7 @@
       </div>
     </div>
 
+    <!-- Funciones rápidas -->
     <div class="row">
       <div class="col-md-6 mb-4">
         <div class="card feature-card h-100">
@@ -201,38 +189,29 @@
       </div>
     </div>
 
-    <div id="debug"></div> <!-- Debug de sesión -->
+    <!-- Debug (solo local) -->
+    <div id="debug"></div>
   </div>
 
   <script>
-    // 🌐 Detección de entorno automático
-    const isLocal =
-      ["localhost", "127.0.0.1"].includes(window.location.hostname) ||
-      window.location.hostname.startsWith("192.168.");
-    const API_BASE_URL = isLocal
-      ? "http://localhost:3000"
-      : "https://testeorepocaps.loca.lt";
-
+    // 🔹 Detección de entorno
+    const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname) || window.location.hostname.startsWith("192.168.");
+    const API_BASE_URL = isLocal ? "http://localhost:3000" : "https://testeorepocaps.loca.lt";
     const envIndicator = document.getElementById("envIndicator");
     const debug = document.getElementById("debug");
 
-    envIndicator.textContent = isLocal
-      ? "🌐 Entorno local activo"
-      : "🚀 Conectado al túnel remoto";
+    envIndicator.textContent = isLocal ? "🌐 Entorno local activo" : "🚀 Conectado al túnel remoto";
+    if (isLocal) debug.style.display = "block";
 
-    // 🧠 Carga inicial
     document.addEventListener("DOMContentLoaded", () => {
+      // 🔹 Obtener usuario y token de localStorage
       const usuarioData = localStorage.getItem("usuario");
       const token = localStorage.getItem("token");
 
-    if (window.location.hostname === "localhost") {
-    debug.innerHTML = `DEBUG: usuarioData = ${usuarioData}, token = ${token}`;
-    } else {
-    debug.style.display = "none";
-    }
+      debug.innerHTML = `DEBUG: usuarioData = ${usuarioData}, token = ${token}`;
 
-      if (!usuarioData || !token) {
-        console.warn("Redirigiendo al login por falta de sesión");
+      if (!usuarioData || token !== "authenticated") {
+        console.warn("Redirigiendo al login: usuario no autenticado");
         window.location.replace("inicio-sesion.html");
         return;
       }
@@ -240,12 +219,14 @@
       try {
         const empleado = JSON.parse(usuarioData);
         actualizarInterfazEmpleado(empleado);
-      } catch (error) {
-        console.error("Error cargando usuario:", error);
+        // cargarEstadisticas(); // activar cuando existan endpoints
+      } catch (err) {
+        console.error("Error cargando usuario:", err);
         window.location.replace("inicio-sesion.html");
       }
     });
 
+    // 🔹 Función para actualizar info del empleado
     function actualizarInterfazEmpleado(empleado) {
       document.getElementById("welcomeTitle").textContent = `Bienvenido, ${empleado.nombre}`;
       document.getElementById("empleadoInfo").innerHTML = `
@@ -259,16 +240,14 @@
         <div class="col-md-6">
           <table class="table table-sm">
             <tr><td><strong>Horario:</strong></td><td>${empleado.horario}</td></tr>
-            <tr><td><strong>Disponibilidad:</strong></td>
-              <td><span class="badge ${getBadgeClass(mapDisponibilidad(empleado.disponibilidad))}">
-                ${mapDisponibilidad(empleado.disponibilidad)}
-              </span></td></tr>
+            <tr><td><strong>Disponibilidad:</strong></td><td><span class="badge ${getBadgeClass(empleado.disponibilidad)}">${mapDisponibilidad(empleado.disponibilidad)}</span></td></tr>
           </table>
         </div>`;
     }
 
+    // 🔹 Mapear disponibilidad numérica a texto
     function mapDisponibilidad(value) {
-      switch (Number(value)) {
+      switch (value) {
         case 1: return "disponible";
         case 2: return "ocupado";
         case 3: return "ausente";
@@ -276,15 +255,17 @@
       }
     }
 
-    function getBadgeClass(status) {
-      switch (status) {
-        case "disponible": return "badge-disponible";
-        case "ocupado": return "badge-ocupado";
-        case "ausente": return "badge-ausente";
+    // 🔹 Obtener clase de badge según disponibilidad
+    function getBadgeClass(d) {
+      switch (d) {
+        case 1: return "badge-disponible";
+        case 2: return "badge-ocupado";
+        case 3: return "badge-ausente";
         default: return "badge-desconocido";
       }
     }
 
+    // 🔹 Cerrar sesión
     function cerrarSesion() {
       if (confirm("¿Deseas cerrar sesión?")) {
         localStorage.removeItem("usuario");
