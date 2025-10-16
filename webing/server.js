@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));//carpeta hija
 
 app.get('/', (req, res) => {
-res.sendFile(path.join(__dirname, 'public', 'inicio-sesion.html'));
+  res.sendFile(path.join(__dirname, 'public', 'inicio-sesion.html'));
 });
 
 // 🔐 ENDPOINT DE LOGIN
@@ -28,7 +28,7 @@ app.post('/api/login', (req, res) => {
   }
 
   const query = 'SELECT * FROM empleados WHERE usuario = ? AND contrasena = ?';
-  
+
   db.query(query, [usuario, contrasena], (err, results) => {
     if (err) {
       console.error('❌ Error en consulta MySQL:', err);
@@ -41,7 +41,7 @@ app.post('/api/login', (req, res) => {
     if (results.length > 0) {
       const empleado = results[0];
       console.log('✅ Login exitoso para:', empleado.nombre);
-      
+
       res.json({
         success: true,
         message: 'Login exitoso',
@@ -75,7 +75,7 @@ app.get('/api/status', (req, res) => {
         timestamp: new Date().toISOString()
       });
     }
-    
+
     res.json({
       status: 'Servidor y BD funcionando correctamente',
       timestamp: new Date().toISOString(),
@@ -108,7 +108,7 @@ app.get('/api/empleados1', (req, res) => {
 });
 
 app.get('/api/status', (req, res) => {
-  res.json({ base_datos: 'Conectado' }); 
+  res.json({ base_datos: 'Conectado' });
 });
 
 // Ruta de login
@@ -120,7 +120,7 @@ app.post('/api/login', (req, res) => {
   }
 
   // Consulta MySQL
-  const sql = 'SELECT * FROM empleados WHERE usuario = ? AND contrasena = ?';
+  const sql = 'SELECT usuario, contrasena FROM empleados WHERE usuario = ? AND contrasena = ?';
   db.query(sql, [usuario, contrasena], (err, results) => {
     if (err) {
       console.error('❌ Error en consulta MySQL:', err);
@@ -151,12 +151,12 @@ app.post('/api/login', (req, res) => {
 
 //Inicia el servidor
 app.listen(port, () => {
-console.log(`Servidor iniciado en http://localhost:${port}`);
-// Escuchar en todas las interfaces de red
-console.log(`📋 Endpoints disponibles:`);
-console.log(`   POST http://localhost:${port}/api/login`);
-console.log(`   GET  http://localhost:${port}/api/status`);
-console.log(`   GET  http://localhost:${port}/api/empleados`);
+  console.log(`Servidor iniciado en http://localhost:${port}`);
+  // Escuchar en todas las interfaces de red
+  console.log(`📋 Endpoints disponibles:`);
+  console.log(`   POST http://localhost:${port}/api/login`);
+  console.log(`   GET  http://localhost:${port}/api/status`);
+  console.log(`   GET  http://localhost:${port}/api/empleados`);
 });
 
 const cors = require('cors');
