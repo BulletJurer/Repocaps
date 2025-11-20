@@ -1,0 +1,1 @@
+En el archivo setup.txt se encuentran las instrucciones para ejecutar todo el programa tanto para windows como IOS
