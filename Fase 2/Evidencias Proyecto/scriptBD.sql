@@ -1,155 +1,190 @@
-CREATE TABLE IF NOT EXISTS `prueba_pepsi`.`talleres` (
-  `taller_id` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(100) NOT NULL,
-  `ubicacion` VARCHAR(100) NOT NULL,
-  `encargado_taller` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`taller_id`)
-) ENGINE = InnoDB
-AUTO_INCREMENT = 2
-DEFAULT CHARACTER SET = utf8mb4;
+USE prueba_pepsi;
 
--- -----------------------------------------------------
--- Table `prueba_pepsi`.`empleados`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `prueba_pepsi`.`empleados` (
-  `rut` VARCHAR(12) NOT NULL,
-  `nombre` VARCHAR(100) NOT NULL,
-  `cargo` VARCHAR(50) NOT NULL,
-  `region` VARCHAR(50) NULL DEFAULT NULL,
-  `horario` VARCHAR(100) NULL DEFAULT NULL,
-  `disponibilidad` TINYINT NOT NULL,
-  `contrasena` VARCHAR(100) NOT NULL,
-  `usuario` VARCHAR(45) NOT NULL,
-  `taller_id` INT NOT NULL DEFAULT '1',
-  PRIMARY KEY (`rut`, `taller_id`),
-  INDEX `fk_empleados_talleres1_idx` (`taller_id`),
-  CONSTRAINT `fk_empleados_talleres1`
-    FOREIGN KEY (`taller_id`)
-    REFERENCES `prueba_pepsi`.`talleres` (`taller_id`)
-) ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+Alter database prueba_pepsi
+	character set utf8mb4
+    collate utf8mb4_0900_ai_ci;
 
--- -----------------------------------------------------
--- Table `prueba_pepsi`.`vehiculos`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `prueba_pepsi`.`vehiculos` (
-  `patente` VARCHAR(20) NOT NULL,
-  `marca` VARCHAR(50) NOT NULL,
-  `modelo` VARCHAR(50) NOT NULL,
-  `anio` INT NULL DEFAULT NULL,
-  `tipo` VARCHAR(50) NULL DEFAULT NULL,
-  `estado` VARCHAR(50) NOT NULL DEFAULT 'Disponible',
-  `ubicacion` VARCHAR(100) NULL DEFAULT NULL,
-  PRIMARY KEY (`patente`)
-) ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+-- =========================
+-- TALLERES
+-- =========================
+DROP TABLE IF EXISTS talleres;
+CREATE TABLE talleres (
+  taller_id INT NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(100) NOT NULL,
+  ubicacion VARCHAR(100) NOT NULL,
+  encargado_taller VARCHAR(255) NOT NULL,
+  PRIMARY KEY (taller_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- -----------------------------------------------------
--- Table `prueba_pepsi`.`incidentes`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `prueba_pepsi`.`incidentes` (
-  `incidente_id` INT NOT NULL AUTO_INCREMENT,
-  `fecha` DATETIME NULL,
-  `descripcion` VARCHAR(1000) NOT NULL,
-  `patente` VARCHAR(20) NOT NULL,
-  `rut` VARCHAR(12) NOT NULL,
-  PRIMARY KEY (`incidente_id`, `patente`, `rut`),
-  INDEX `fk_incidentes_vehiculos1_idx` (`patente`),
-  INDEX `fk_incidentes_empleados1_idx` (`rut`),
-  CONSTRAINT `fk_incidentes_empleados1`
-    FOREIGN KEY (`rut`)
-    REFERENCES `prueba_pepsi`.`empleados` (`rut`),
-  CONSTRAINT `fk_incidentes_vehiculos1`
-    FOREIGN KEY (`patente`)
-    REFERENCES `prueba_pepsi`.`vehiculos` (`patente`)
-) ENGINE = InnoDB
-AUTO_INCREMENT = 5
-DEFAULT CHARACTER SET = utf8mb4;
+-- =========================
+-- EMPLEADOS
+-- =========================
+DROP TABLE IF EXISTS empleados;
+CREATE TABLE empleados (
+  rut VARCHAR(12) NOT NULL,               -- PK simple (ej: 11.111.111-1)
+  nombre VARCHAR(100) NOT NULL,
+  cargo VARCHAR(50) NOT NULL,
+  region VARCHAR(50) DEFAULT NULL,
+  horario VARCHAR(100) DEFAULT NULL,
+  disponibilidad TINYINT(1) NOT NULL,     -- mapea a BooleanField en Django
+  password VARCHAR(128) NOT NULL,         -- hash
+  usuario VARCHAR(45) NOT NULL,           -- username login
+  taller_id INT NOT NULL,
+  last_login DATETIME DEFAULT NULL,
+  is_staff TINYINT(1) NOT NULL DEFAULT 0,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  is_superuser TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (rut),
+  UNIQUE KEY uq_empleados_usuario (usuario),
+  KEY fk_empleados_talleres1_idx (taller_id),
+  CONSTRAINT fk_empleados_talleres1
+    FOREIGN KEY (taller_id) REFERENCES talleres (taller_id)
+    ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- -----------------------------------------------------
--- Table `prueba_pepsi`.`llaves`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `prueba_pepsi`.`llaves` (
-  `llave_id` INT NOT NULL,
-  `estado` VARCHAR(50) NOT NULL DEFAULT 'Disponible',
-  `rut` VARCHAR(45) NULL DEFAULT NULL,
-  `patente` VARCHAR(20) NOT NULL,
-  PRIMARY KEY (`llave_id`, `patente`),
-  INDEX `fk_llaves_empleados1_idx` (`rut`),
-  INDEX `fk_llaves_vehiculos1_idx` (`patente`),
-  CONSTRAINT `fk_llaves_empleados1`
-    FOREIGN KEY (`rut`)
-    REFERENCES `prueba_pepsi`.`empleados` (`rut`),
-  CONSTRAINT `fk_llaves_vehiculos1`
-    FOREIGN KEY (`patente`)
-    REFERENCES `prueba_pepsi`.`vehiculos` (`patente`)
-) ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+-- =========================
+-- VEHICULOS
+-- =========================
+DROP TABLE IF EXISTS vehiculos;
+CREATE TABLE vehiculos (
+  patente VARCHAR(20) NOT NULL,
+  marca VARCHAR(50) NOT NULL,
+  modelo VARCHAR(50) NOT NULL,
+  anio INT DEFAULT NULL,
+  tipo VARCHAR(50) DEFAULT NULL,
+  estado VARCHAR(50) NOT NULL DEFAULT 'Disponible',
+  ubicacion VARCHAR(100) DEFAULT NULL,
+  PRIMARY KEY (patente)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- -----------------------------------------------------
--- Table `prueba_pepsi`.`ordenestrabajo`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `prueba_pepsi`.`ordenestrabajo` (
-  `ot_id` INT NOT NULL AUTO_INCREMENT,
-  `fecha_ingreso` DATE NOT NULL,
-  `fecha_salida` DATE NULL,
-  `descripcion` VARCHAR(255) NULL DEFAULT NULL,
-  `estado` VARCHAR(50) NOT NULL DEFAULT 'Pendiente',
-  `patente` VARCHAR(20) NOT NULL,
-  `taller_id` INT NOT NULL,
-  `rut` VARCHAR(12) NOT NULL,
-  PRIMARY KEY (`ot_id`),
-  INDEX `fk_ordenestrabajo_vehiculos1_idx` (`patente`),
-  INDEX `fk_ordenestrabajo_talleres1_idx` (`taller_id`),
-  INDEX `fk_ordenestrabajo_empleados1_idx` (`rut`),
-  CONSTRAINT `fk_ordenestrabajo_empleados1`
-    FOREIGN KEY (`rut`)
-    REFERENCES `prueba_pepsi`.`empleados` (`rut`),
-  CONSTRAINT `fk_ordenestrabajo_talleres1`
-    FOREIGN KEY (`taller_id`)
-    REFERENCES `prueba_pepsi`.`talleres` (`taller_id`),
-  CONSTRAINT `fk_ordenestrabajo_vehiculos1`
-    FOREIGN KEY (`patente`)
-    REFERENCES `prueba_pepsi`.`vehiculos` (`patente`)
-) ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+-- =========================
+-- ORDENES DE TRABAJO
+-- =========================
 
--- -----------------------------------------------------
--- Table `prueba_pepsi`.`prestamosvehiculos`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `prueba_pepsi`.`prestamosvehiculos` (
-  `prestamo_id` INT NOT NULL AUTO_INCREMENT,
-  `fecha_inicio` DATE NOT NULL,
-  `fecha_fin` DATE NULL,
-  `estado` VARCHAR(50) NOT NULL DEFAULT 'En uso',
-  `patente` VARCHAR(20) NOT NULL,
-  `empleados_rut` VARCHAR(12) NOT NULL,
-  `empleados_taller_id` INT NOT NULL,
-  PRIMARY KEY (`prestamo_id`),
-  INDEX `fk_prestamosvehiculos_vehiculos1_idx` (`patente`),
-  INDEX `fk_prestamosvehiculos_empleados1_idx` (`empleados_rut`, `empleados_taller_id`),
-  CONSTRAINT `fk_prestamosvehiculos_empleados1`
-    FOREIGN KEY (`empleados_rut`, `empleados_taller_id`)
-    REFERENCES `prueba_pepsi`.`empleados` (`rut`, `taller_id`),
-  CONSTRAINT `fk_prestamosvehiculos_vehiculos1`
-    FOREIGN KEY (`patente`)
-    REFERENCES `prueba_pepsi`.`vehiculos` (`patente`)
-) ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DROP TABLE IF EXISTS ordenestrabajo;
+CREATE TABLE ordenestrabajo (
+  ot_id INT NOT NULL AUTO_INCREMENT,
+  fecha_ingreso DATE NOT NULL,
+  hora_ingreso TIME DEFAULT NULL,
+  fecha_salida DATE DEFAULT NULL,
+  descripcion VARCHAR(255) DEFAULT NULL,
+  estado VARCHAR(50) NOT NULL DEFAULT 'Pendiente',
+  patente VARCHAR(20) NOT NULL,
+  taller_id INT NOT NULL,
+  rut VARCHAR(12) NOT NULL,          -- responsable
+  rut_creador VARCHAR(12) DEFAULT NULL, -- quién crea la OT
+  PRIMARY KEY (ot_id),
 
--- -----------------------------------------------------
--- Table `prueba_pepsi`.`repuestos`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `prueba_pepsi`.`repuestos` (
-  `repuesto_id` INT NOT NULL AUTO_INCREMENT,
-  `cantidad` INT NOT NULL DEFAULT '1',
-  `nombre` VARCHAR(100) NOT NULL,
-  `descripcion` VARCHAR(500) NULL DEFAULT NULL,
-  `ot_id` INT NOT NULL,
-  PRIMARY KEY (`repuesto_id`),
-  INDEX `fk_repuestos_ordenestrabajo1_idx` (`ot_id`),
-  CONSTRAINT `fk_repuestos_ordenestrabajo1`
-    FOREIGN KEY (`ot_id`)
-    REFERENCES `prueba_pepsi`.`ordenestrabajo` (`ot_id`)
-) ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+  -- Índices de FKs
+  KEY fk_ot_vehiculos_idx (patente),
+  KEY fk_ot_talleres_idx (taller_id),
+  KEY fk_ot_empleados_idx (rut),
+  KEY fk_ot_empleados_creador_idx (rut_creador),
+
+  -- Índices para reporting/agenda
+  KEY idx_ot_fecha (fecha_ingreso),
+  KEY idx_ot_taller_fecha_hora (taller_id,fecha_ingreso,hora_ingreso),
+
+  CONSTRAINT fk_ot_vehiculos
+    FOREIGN KEY (patente) REFERENCES vehiculos (patente)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_ot_talleres
+    FOREIGN KEY (taller_id) REFERENCES talleres (taller_id)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_ot_empleados
+    FOREIGN KEY (rut) REFERENCES empleados (rut)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_ot_empleados_creador
+    FOREIGN KEY (rut_creador) REFERENCES empleados (rut)
+    ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================
+-- REPUESTOS (detalle de OT)
+-- =========================
+DROP TABLE IF EXISTS repuestos;
+CREATE TABLE repuestos (
+  repuesto_id INT NOT NULL AUTO_INCREMENT,
+  cantidad INT NOT NULL DEFAULT 1,
+  nombre VARCHAR(100) NOT NULL,
+  descripcion VARCHAR(500) DEFAULT NULL,
+  ot_id INT NOT NULL,
+  PRIMARY KEY (repuesto_id),
+  KEY fk_repuestos_ot_idx (ot_id),
+  CONSTRAINT fk_repuestos_ot
+    FOREIGN KEY (ot_id) REFERENCES ordenestrabajo (ot_id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================
+-- INCIDENTES
+-- =========================
+DROP TABLE IF EXISTS incidentes;
+CREATE TABLE incidentes (
+  incidente_id INT NOT NULL AUTO_INCREMENT,
+  fecha DATETIME DEFAULT NULL,
+  descripcion VARCHAR(1000) NOT NULL,
+  patente VARCHAR(20) NOT NULL,
+  rut VARCHAR(12) NOT NULL,
+  PRIMARY KEY (incidente_id),
+  KEY fk_inc_vehiculos_idx (patente),
+  KEY fk_inc_empleados_idx (rut),
+  CONSTRAINT fk_inc_vehiculos
+    FOREIGN KEY (patente) REFERENCES vehiculos (patente)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_inc_empleados
+    FOREIGN KEY (rut) REFERENCES empleados (rut)
+    ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================
+-- PRESTAMOS DE VEHICULOS
+-- =========================
+DROP TABLE IF EXISTS prestamosvehiculos;
+CREATE TABLE prestamosvehiculos (
+  prestamo_id INT NOT NULL AUTO_INCREMENT,
+  fecha_inicio DATE NOT NULL,
+  fecha_fin DATE DEFAULT NULL,
+  estado VARCHAR(50) NOT NULL DEFAULT 'En uso',
+  patente VARCHAR(20) NOT NULL,
+  empleados_rut VARCHAR(12) NOT NULL,
+  PRIMARY KEY (prestamo_id),
+  KEY fk_pv_vehiculos_idx (patente),
+  KEY fk_pv_empleados_idx (empleados_rut),
+  CONSTRAINT fk_pv_vehiculos
+    FOREIGN KEY (patente) REFERENCES vehiculos (patente)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_pv_empleados
+    FOREIGN KEY (empleados_rut) REFERENCES empleados (rut)
+    ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================
+-- LLAVES
+-- =========================
+DROP TABLE IF EXISTS llaves;
+CREATE TABLE llaves (
+  llave_id INT NOT NULL AUTO_INCREMENT,
+  estado VARCHAR(50) NOT NULL DEFAULT 'Disponible',
+  rut VARCHAR(12) DEFAULT NULL,
+  patente VARCHAR(20) NOT NULL,
+  PRIMARY KEY (llave_id),
+  KEY fk_ll_empleados_idx (rut),
+  KEY fk_ll_vehiculos_idx (patente),
+  CONSTRAINT fk_ll_empleados
+    FOREIGN KEY (rut) REFERENCES empleados (rut)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT fk_ll_vehiculos
+    FOREIGN KEY (patente) REFERENCES vehiculos (patente)
+    ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+USE prueba_pepsi;
+SELECT @@collation_database, @@character_set_database;
+
+Select TABLE_NAME, TABLE_COLLATION
+FROM information_schema.tables
+where table_schema = 'prueba_pepsi';
+
+

@@ -1,0 +1,348 @@
+/* ==========================================================================
+   PALETA CORPORATIVA PEPSICO
+   ========================================================================== */
+:root {
+    --pepsi-blue: #005CB9;
+    --pepsi-blue-dark: #003E7E;
+    --pepsi-yellow: #FFD100;
+    --pepsi-gray: #F4F6F8;
+    --pepsi-text: #243447;
+    --radius: 14px;
+    --shadow: 0 6px 18px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* ==========================================================================
+   BASICS
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--pepsi-gray);
+    color: var(--pepsi-text);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Animación de entrada */
+.fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   SIDEBAR
+   ========================================================================== */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 240px;
+    height: 100vh;
+    background: var(--pepsi-blue);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+    border-radius: 0 20px 20px 0;
+    box-shadow: var(--shadow-lg);
+    transition: transform .3s ease;
+    z-index: 1000; /* <== añadido para que quede bajo el modal */
+}
+
+.sidebar h4 {
+    text-align: center;
+    padding: 20px;
+    margin: 0;
+    background: var(--pepsi-blue-dark);
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+.sidebar .nav-link {
+    color: #fff;
+    padding: 14px 22px;
+    font-size: 1rem;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+    transition: background .2s ease, padding-left .2s ease;
+}
+
+.sidebar .nav-link:hover {
+    background: rgba(255,255,255,0.18);
+    padding-left: 28px;
+}
+
+.sidebar .nav-link.active {
+    background: var(--pepsi-blue-dark);
+    border-left: 5px solid var(--pepsi-yellow);
+    padding-left: 28px;
+    font-weight: 600;
+}
+
+/* Mobile */
+@media (max-width: 992px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 260px;
+    }
+    .sidebar.sidebar-open {
+        transform: translateX(0);
+    }
+}
+
+/* ==========================================================================
+   TOPBAR
+   ========================================================================== */
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 240px;
+    right: 0;
+    height: 60px;
+    background: #fff;
+    box-shadow: var(--shadow);
+    border-bottom: 1px solid #e8eaed;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 25px;
+    z-index: 900;
+}
+
+.topbar .env-indicator {
+    background: #e6eef9;
+    color: var(--pepsi-blue-dark);
+    padding: 6px 12px;
+    border-radius: 10px;
+    margin-right: 14px;
+}
+
+@media (max-width: 992px) {
+    .topbar {
+        left: 0;
+        padding: 0 15px;
+        justify-content: space-between;
+    }
+}
+
+/* ==========================================================================
+   MOBILE HEADER
+   ========================================================================== */
+.mobile-header {
+    display: none;
+}
+
+@media (max-width: 992px) {
+    .mobile-header {
+        display: flex;
+        align-items: center;
+        background: var(--pepsi-blue);
+        color: #fff;
+        padding: 14px 18px;
+        position: sticky;
+        top: 0;
+        z-index: 1100;
+    }
+}
+
+/* ==========================================================================
+   MAIN CONTENT
+   ========================================================================== */
+.main-content {
+    margin-left: 240px;
+    padding: 35px 45px;
+    margin-top: 70px;
+}
+
+@media (max-width: 992px) {
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+}
+
+/* ==========================================================================
+   WELCOME CARD
+   ========================================================================== */
+.welcome-card {
+    background: linear-gradient(135deg, var(--pepsi-blue) 0%, var(--pepsi-blue-dark) 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 40px;
+    box-shadow: var(--shadow-lg);
+}
+
+.welcome-content {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.welcome-avatar {
+    width: 70px;
+    height: 70px;
+    background: var(--pepsi-yellow);
+    color: var(--pepsi-blue-dark);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    box-shadow: var(--shadow);
+}
+
+/* ==========================================================================
+   INFO EMPLEADO
+   ========================================================================== */
+.info-empleado-card {
+    background: #fff;
+    padding: 28px 34px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border-left: 6px solid var(--pepsi-blue);
+}
+
+/* ==========================================================================
+   KPI CARDS
+   ========================================================================== */
+.stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 20px;
+}
+
+.stats-card {
+    background: #fff;
+    padding: 22px;
+    border-radius: var(--radius);
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.stat-number {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--pepsi-blue);
+}
+
+.text-pastel-red {
+    color: #e74c3c !important;
+}
+
+.stat-label {
+    color: #5f6b7e;
+}
+
+/* ==========================================================================
+   FEATURE CARDS
+   ========================================================================== */
+.feature-card {
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    background: #fff;
+}
+
+/* ==========================================================================
+   LOGIN PAGE
+   ========================================================================== */
+.login-body {
+    background: linear-gradient(135deg, var(--pepsi-blue) 0%, var(--pepsi-blue-dark) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-card {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 40px 35px;
+    width: min(420px, 95vw);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+.login-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.login-subtitle {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.login-input {
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.login-btn {
+    background: var(--pepsi-blue);
+    color: #fff;
+    padding: 12px;
+    font-weight: 600;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.login-btn:hover {
+    background: var(--pepsi-blue-dark);
+}
+
+/* ==========================================================================
+   TABLES
+   ========================================================================== */
+table thead {
+    background: var(--pepsi-blue);
+    color: #fff;
+}
+
+table {
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   UTILIDADES
+   ========================================================================== */
+.hidden { display: none; }
+
+/* ==========================================================================
+   MODAL ASIGNACIÓN TALLER
+   ========================================================================== */
+.custom-modal {
+    position: fixed;
+    inset: 0; /* equivale a top/left/right/bottom: 0 */
+    z-index: 1200; /* por encima de sidebar (1000) y mobile-header (1100) */
+    background: rgba(0, 0, 0, 0.45); /* un poco más oscuro */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ocultar completamente cuando se usa d-none desde JS */
+.custom-modal.d-none {
+    display: none !important;
+}
+
+/* Caja interna del modal */
+.custom-modal .modal-content {
+    position: relative;       /* asegura stack propio encima del overlay */
+    z-index: 1;
+    max-width: 600px;
+    width: 95%;
+    margin: 0 1rem;
+    border-radius: 12px;
+}
+

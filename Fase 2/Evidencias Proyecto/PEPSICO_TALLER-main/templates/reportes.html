@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% load static %}
+{% load roles %}
+
+{% block title %}Reportes | Taller PepsiCo Chile{% endblock %}
+
+{% block content %}
+<div class="page-container fade-in">
+
+  <!-- ============================
+       Acceso Denegado
+  ============================= -->
+  {% if acceso_denegado %}
+  <div class="alert alert-danger mt-4">
+    🚫 <strong>Acceso denegado.</strong> Solo el <strong>Supervisor</strong> puede ver esta sección.
+  </div>
+  {% endif %}
+
+  {% if not acceso_denegado %}
+
+  <!-- ============================
+       ENCABEZADO
+  ============================= -->
+  <div class="welcome-card mb-4">
+    <div class="welcome-content">
+      <div class="welcome-avatar">📊</div>
+      <div class="welcome-text">
+        <h1>Panel de Reportes</h1>
+        <p>Estadísticas en tiempo real — Taller PepsiCo Chile</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================
+       KPIs Globales
+  ============================= -->
+  <div class="stats-section mb-4" id="kpiContainer">
+    <div class="stats-card">
+      <div class="stat-number" id="kpi_vehiculos_totales">—</div>
+      <div class="stat-label">Vehículos Totales</div>
+    </div>
+
+    <div class="stats-card">
+      <div class="stat-number" id="kpi_vehiculos_taller">—</div>
+      <div class="stat-label">En Taller</div>
+    </div>
+
+    <div class="stats-card">
+      <div class="stat-number" id="kpi_ordenes_activas">—</div>
+      <div class="stat-label">OTs Activas</div>
+    </div>
+
+    <div class="stats-card">
+      <div class="stat-number" id="kpi_empleados">—</div>
+      <div class="stat-label">Empleados Activos</div>
+    </div>
+  </div>
+
+  <!-- ============================
+       Gráfico 1 — Vehículos por Taller
+  ============================= -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="fw-bold mb-3">🚗 Vehículos por Taller</h5>
+      <canvas id="chartVehiculosTaller" height="120"></canvas>
+    </div>
+  </div>
+
+  <!-- ============================
+       Gráfico 2 — OTs por Taller (pend/proceso/fin)
+  ============================= -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="fw-bold mb-3">🛠️ Órdenes de Trabajo por Taller</h5>
+      <canvas id="chartOTsTaller" height="120"></canvas>
+    </div>
+  </div>
+
+  <!-- ============================
+       Gráfico 3 — Tiempos Promedio
+  ============================= -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="fw-bold mb-3">⏱️ Tiempos Promedio de Reparación</h5>
+      <canvas id="chartTiempos" height="120"></canvas>
+    </div>
+  </div>
+
+  {% endif %}
+</div>
+
+<!-- ============================
+     Chart.js
+============================= -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- ============================
+     Script del Dashboard
+============================= -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("📊 Cargando reportes...");
+
+  loadKPIs();
+  loadTalleres();
+  loadTiempos();
+
+  // ====================================================
+  // 1) KPIs Globales
+  // ====================================================
+  async function loadKPIs() {
+    try {
+      const res = await fetch("/reportes/api/resumen/");
+      const data = await res.json();
+
+      if (!data.success) return;
+
+      document.getElementById("kpi_vehiculos_totales").textContent = data.data.vehiculos_totales;
+      document.getElementById("kpi_vehiculos_taller").textContent = data.data.vehiculos_en_taller;
+      document.getElementById("kpi_ordenes_activas").textContent = data.data.ordenes_activas;
+      document.getElementById("kpi_empleados").textContent = data.data.empleados_activos;
+
+    } catch (e) {
+      console.error("Error KPIs", e);
+    }
+  }
+
+  // ====================================================
+  // 2) Vehículos + OTs por Taller
+  // ====================================================
+  async function loadTalleres() {
+    try {
+      const res = await fetch("/reportes/api/talleres/");
+      const data = await res.json();
+      if (!data.success) return;
+
+      const labels = data.items.map(t => t.nombre);
+      const vehiculos = data.items.map(t => t.vehiculos_total);
+      const otsPend = data.items.map(t => t.ots_pendientes);
+      const otsProc = data.items.map(t => t.ots_en_proceso);
+      const otsFin = data.items.map(t => t.ots_finalizadas);
+
+      // === Gráfico Vehículos por Taller ===
+      new Chart(document.getElementById("chartVehiculosTaller"), {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Vehículos",
+            data: vehiculos,
+            backgroundColor: "#007bff88",
+            borderColor: "#007bff",
+            borderWidth: 1
+          }]
+        }
+      });
+
+      // === Gráfico OTs ===
+      new Chart(document.getElementById("chartOTsTaller"), {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "Pendiente",
+              data: otsPend,
+              backgroundColor: "#ffc107aa",
+              borderColor: "#ffc107",
+              borderWidth: 1
+            },
+            {
+              label: "En Proceso",
+              data: otsProc,
+              backgroundColor: "#17a2b8aa",
+              borderColor: "#17a2b8",
+              borderWidth: 1
+            },
+            {
+              label: "Finalizado",
+              data: otsFin,
+              backgroundColor: "#28a745aa",
+              borderColor: "#28a745",
+              borderWidth: 1
+            }
+          ]
+        }
+      });
+
+    } catch (e) {
+      console.error("Error talleres", e);
+    }
+  }
+
+  // ====================================================
+  // 3) Tiempos Promedio
+  // ====================================================
+  async function loadTiempos() {
+    try {
+      const res = await fetch("/reportes/api/tiempos/");
+      const data = await res.json();
+      if (!data.success) return;
+
+      const labels = Object.values(data.por_taller).map(t => t.taller);
+      const valores = Object.values(data.por_taller).map(t => t.promedio_dias || 0);
+
+      new Chart(document.getElementById("chartTiempos"), {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Promedio (días)",
+            data: valores,
+            tension: 0.3,
+            borderColor: "#6610f2",
+            backgroundColor: "#6610f244",
+            borderWidth: 2,
+            fill: true
+          }]
+        }
+      });
+
+    } catch (e) {
+      console.error("Error tiempos", e);
+    }
+  }
+
+});
+</script>
+
+{% endblock %}

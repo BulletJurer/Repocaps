@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ingreso de Vehículos | Taller PepsiCo Chile{% endblock %}
+
+{% block content %}
+<div class="page-container fade-in">
+
+    <div class="welcome-card mb-4">
+        <div class="welcome-content">
+            <div class="welcome-avatar">🚗</div>
+            <div class="welcome-text">
+                <h1>Ingreso de Vehículos</h1>
+                <p>Registra camiones y visualiza ingresos recientes</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="okIngreso" class="alert alert-success d-none"></div>
+    <div id="errIngreso" class="alert alert-danger d-none"></div>
+
+    {% if empleado %}
+    <div class="info-empleado-card mb-4">
+        <div class="d-flex justify-content-between">
+            <div>
+                <h5 class="fw-bold mb-1">{{ empleado.nombre }}</h5>
+                <p class="text-muted small mb-0">
+                    RUT: {{ empleado.rut }} · Cargo: {{ empleado.cargo }}
+                </p>
+            </div>
+            <div class="text-end small">
+                <div><strong>Región:</strong> {{ empleado.region }}</div>
+                <div><strong>Taller:</strong> {{ empleado.taller.nombre }}</div>
+            </div>
+        </div>
+    </div>
+
+    {% if empleado.cargo == "CHOFER" or empleado.cargo == "SUPERVISOR" %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3">📝 Registrar Ingreso</h5>
+
+            <form id="formIngreso">
+                {% csrf_token %}
+
+                <div class="row g-3">
+
+                    <div class="col-md-3">
+                        <label class="form-label">Patente</label>
+                        <input id="patente" type="text" class="form-control text-uppercase" placeholder="ABCD12">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Fecha</label>
+                        <input id="fecha" type="date" class="form-control">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Taller</label>
+                        <select id="tallerId" class="form-select">
+                            <option value="">Seleccione...</option>
+                            {% for t in talleres %}
+                                <option value="{{ t.taller_id }}" {% if empleado.taller_id == t.taller_id %}selected{% endif %}>
+                                    {{ t.nombre }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Descripción</label>
+                        <input id="descripcion" type="text" class="form-control" placeholder="Motivo o detalle">
+                    </div>
+
+                </div>
+
+                <div class="mt-4">
+                    <h6 class="fw-bold">Disponibilidad del Taller</h6>
+                    <div id="slotsGrid" class="mt-2"></div>
+
+                    <div id="slotResumen" class="mt-3 d-none">
+                        <span class="badge bg-primary shadow-sm">Seleccionado: <span id="slotSel"></span></span>
+                    </div>
+                </div>
+
+                <div class="text-end mt-4">
+                    <button id="btnCrear" type="submit" class="btn btn-primary px-4" disabled>
+                        💾 Crear OT
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3">📋 Últimos Vehículos Disponibles</h5>
+
+            <div class="text-muted small mb-3">
+                Vehículos cuya última OT finalizó y actualmente están <strong>Disponibles</strong>.
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>OT</th>
+                            <th>Patente</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablaUltimosIngresos">
+                        {% include "partials/tabla_ultimos_ingresos.html" with ots=ultimas_ot %}
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    {% else %}
+        <div class="alert alert-warning">No tienes permisos para esta sección.</div>
+    {% endif %}
+
+</div>
+
+<script src="{% static 'js/ingreso_vehiculos.js' %}"></script>
+{% endblock %}
