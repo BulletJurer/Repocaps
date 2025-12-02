@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ficha Vehículo | Taller PepsiCo Chile{% endblock %}
+
+{% block content %}
+<div class="page-container fade-in">
+
+    <!-- HEADER -->
+    <div class="welcome-card mb-4">
+        <div class="welcome-content">
+            <div class="welcome-avatar">🚗</div>
+            <div class="welcome-text">
+                <h1>Ficha del Vehículo</h1>
+                <p>Consulta historial, estados y órdenes de trabajo</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- BUSCADOR -->
+    <div class="card shadow-sm mb-4 p-4">
+        <h5 class="fw-bold mb-3">🔍 Buscar Vehículo</h5>
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input id="inputPatente" type="text"
+                       class="form-control"
+                       placeholder="Ej: ABC123"
+                       value="{{ patente|default:'' }}">
+            </div>
+
+            <div class="col-md-2">
+                <button id="btnBuscar" class="btn btn-primary w-100">Buscar</button>
+            </div>
+        </div>
+
+        <div id="alertBox" class="mt-3"></div>
+    </div>
+
+    <!-- INFO VEHÍCULO -->
+    <div id="infoVehiculo" class="hidden">
+
+        <!-- CARD PRINCIPAL -->
+        <div class="card shadow-sm p-4 mb-4">
+            <h5 class="fw-bold mb-3">📘 Información del Vehículo</h5>
+
+            <div class="row">
+                <div class="col-md-3 mb-2"><strong>Patente:</strong> <span id="v_patente"></span></div>
+                <div class="col-md-3 mb-2"><strong>Marca:</strong> <span id="v_marca"></span></div>
+                <div class="col-md-3 mb-2"><strong>Modelo:</strong> <span id="v_modelo"></span></div>
+                <div class="col-md-3 mb-2"><strong>Año:</strong> <span id="v_anio"></span></div>
+
+                <div class="col-md-3 mb-2"><strong>Tipo:</strong> <span id="v_tipo"></span></div>
+                <div class="col-md-3 mb-2"><strong>Ubicación:</strong> <span id="v_ubicacion"></span></div>
+                <div class="col-md-3 mb-2">
+                    <strong>Estado Actual:</strong>
+                    <span id="v_estado" class="badge bg-secondary"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPIS -->
+        <div class="stats-section mb-4" id="kpiContainer">
+            <div class="stats-card">
+                <div class="stat-number" id="k_ots"></div>
+                <div class="stat-label">OTs Totales</div>
+            </div>
+            <div class="stats-card">
+                <div class="stat-number" id="k_inc"></div>
+                <div class="stat-label">Incidentes</div>
+            </div>
+            <div class="stats-card">
+                <div class="stat-number" id="k_llave"></div>
+                <div class="stat-label">Llave</div>
+            </div>
+        </div>
+
+        <!-- OT ACTUAL -->
+        <div class="card shadow-sm p-4 mb-4" id="otActualCard" style="display:none;">
+            <h5 class="fw-bold mb-3">🛠️ Orden de Trabajo en Curso</h5>
+
+            <div class="row">
+                <div class="col-md-3 mb-2"><strong>ID OT:</strong> <span id="ot_id"></span></div>
+                <div class="col-md-3 mb-2"><strong>Estado:</strong> <span id="ot_estado" class="badge bg-info"></span></div>
+                <div class="col-md-3 mb-2"><strong>Fecha:</strong> <span id="ot_fecha"></span></div>
+                <div class="col-md-3 mb-2"><strong>Taller:</strong> <span id="ot_taller"></span></div>
+            </div>
+        </div>
+
+        <!-- 📎 DOCUMENTOS ASOCIADOS -->
+        <div class="card shadow-sm p-4 mb-4" id="cardDocumentos" style="display:none;">
+            <h5 class="fw-bold mb-3">📎 Documentos Asociados</h5>
+
+            <!-- FORM UPLOAD -->
+            <form id="formUploadDoc" enctype="multipart/form-data" class="mb-3">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <input type="file" id="docArchivo" name="archivo" class="form-control"
+                               accept=".pdf,.jpg,.jpeg,.png,.docx">
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" id="docTitulo" name="titulo" class="form-control"
+                               placeholder="Título del documento">
+                    </div>
+                    <div class="col-md-3">
+                        <select id="docTipo" class="form-select">
+                            <option value="FOTO">Fotografía</option>
+                            <option value="INFORME">Informe</option>
+                            <option value="OTRO" selected>Otro</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <button class="btn btn-success w-100" id="btnSubirDoc" type="submit">↑</button>
+                    </div>
+                </div>
+                <div id="docMsg" class="mt-2"></div>
+            </form>
+
+            <!-- CONTENEDOR DOCUMENTOS (3 GRUPOS) -->
+            <div id="listaDocumentos" class="list-group"></div>
+        </div>
+
+        <!-- PANEL CAMBIO ESTADO -->
+        <div class="card shadow-sm p-4 mb-4" id="panelCambioEstado" style="display:none;">
+            <h5 class="fw-bold mb-3">⚙️ Cambiar Estado de OT</h5>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <select id="estadoNuevo" class="form-select">
+                        <option value="">Seleccione estado…</option>
+                        {# opciones se llenan dinámicamente desde ficha_vehiculo.js #}
+                    </select>
+                </div>
+
+                <div class="col-md-8">
+                    <input id="comentarioEstado" type="text" class="form-control"
+                           placeholder="Comentario (obligatorio para cualquier cambio de estado)">
+                </div>
+            </div>
+
+            <button id="btnGuardarEstado" class="btn btn-success mt-3">Guardar cambio</button>
+            <div id="estadoMsg" class="mt-3"></div>
+        </div>
+
+        <!-- HISTORIAL DE OTs -->
+        <div class="card shadow-sm p-4 mb-4">
+            <h5 class="fw-bold mb-3">📜 Historial de OTs</h5>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>OT</th>
+                            <th>Fecha</th>
+                            <th>Taller</th>
+                            <th>Estado</th>
+                            <th>Comentarios / Bitácora</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timeline">
+                        <!-- Se llena desde ficha_vehiculo.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="{% static 'js/ficha_vehiculo.js' %}"></script>
+{% endblock %}

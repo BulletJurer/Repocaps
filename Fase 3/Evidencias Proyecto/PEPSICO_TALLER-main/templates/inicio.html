@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load static %}
+{% load roles %}
+
+{% block title %}Inicio | Taller PepsiCo Chile{% endblock %}
+
+{% block content %}
+<div class="page-container fade-in">
+
+    {% if empleado %}
+    <!-- ======================================================
+         TARJETA DE BIENVENIDA
+    ====================================================== -->
+    <div class="welcome-card mb-4">
+        <div class="welcome-content">
+            <div class="welcome-avatar">
+                {{ empleado.nombre|default:"?"|first|upper }}
+            </div>
+
+            <div class="welcome-text">
+                <h1 class="mb-1">Bienvenido, {{ empleado.nombre }}</h1>
+                <p class="m-0">
+                    Sistema de Gestión de Vehículos — <strong>Taller PepsiCo Chile</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================
+         INFORMACIÓN DEL EMPLEADO
+    ====================================================== -->
+    <div class="card info-empleado-card mb-4">
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+                <h5 class="fw-bold mb-3">🧑‍💼 Mi Información</h5>
+
+                <p class="mb-1"><strong>RUT:</strong> {{ empleado.rut }}</p>
+                <p class="mb-1"><strong>Cargo:</strong> {{ empleado.cargo }}</p>
+            </div>
+
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Horario:</strong> {{ empleado.horario }}</p>
+                <p class="mb-1"><strong>Región:</strong> {{ empleado.region }}</p>
+                {# Intencionalmente no mostramos Taller / Recinto aquí #}
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ======================================================
+         KPIS (solo supervisor)
+    ====================================================== -->
+    {% if empleado.cargo|upper == "SUPERVISOR" %}
+    <div class="stats-section mb-4">
+
+        <div class="stats-card">
+            <div class="stat-number" id="statVehiculos">
+                {{ kpis.total_vehiculos|default:"0" }}
+            </div>
+            <div class="stat-label">Vehículos Totales</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stat-number text-pastel-red" id="statTaller">
+                {{ kpis.en_taller|default:"0" }}
+            </div>
+            <div class="stat-label">En Taller</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stat-number" id="statProceso">
+                {{ kpis.en_proceso|default:"0" }}
+            </div>
+            <div class="stat-label">En Proceso</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stat-number" id="statEmpleados">
+                {{ kpis.total_empleados|default:"0" }}
+            </div>
+            <div class="stat-label">Empleados Activos</div>
+        </div>
+
+    </div>
+    {% endif %}
+
+    <!-- ======================================================
+         TARJETAS DE ACCESO RÁPIDO
+    ====================================================== -->
+    <div class="features-section">
+
+        {# 1️⃣ Chofer / Supervisor: solicitud de ingreso #}
+        {% if empleado.cargo|upper == "CHOFER" or empleado.cargo|upper == "SUPERVISOR" %}
+        <div class="card feature-card">
+            <div class="card-body">
+                <h5 class="fw-bold">🚗 Solicitar Ingreso Vehículo</h5>
+                <p class="text-muted">Registra ingresos y agenda revisiones.</p>
+                <a href="{% url 'ingreso-vehiculos' %}" class="btn btn-outline-primary w-100">
+                    Ingresar
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        {# 2️⃣ Supervisor: asignación de taller #}
+        {% if empleado.cargo|upper == "SUPERVISOR" %}
+        <div class="card feature-card">
+            <div class="card-body">
+                <h5 class="fw-bold">🧰 Solicitudes de vehículos</h5>
+                <p class="text-muted">
+                    Revisar solicitudes de ingreso y programar ingreso al taller.
+                </p>
+                <a href="{% url 'asignacion-taller' %}" class="btn btn-outline-primary w-100">
+                    Abrir Asignación
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        {# 3️⃣ Supervisor / Mecánico: registro en taller #}
+        {% if empleado.cargo|upper == "SUPERVISOR" or empleado.cargo|upper == "MECANICO" %}
+        <div class="card feature-card">
+            <div class="card-body">
+                <h5 class="fw-bold">🛠️ Registro de Vehículos en el Taller</h5>
+                <p class="text-muted">Gestiona y visualiza todos los vehículos en el taller.</p>
+                <a href="{% url 'registro-taller' %}" class="btn btn-outline-primary w-100">
+                    Ingresar
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        {# 4️⃣ Guardia / Supervisor: control de acceso al recinto #}
+        {% if empleado.cargo|upper == "GUARDIA" or empleado.cargo|upper == "SUPERVISOR" %}
+        <div class="card feature-card">
+            <div class="card-body">
+                <h5 class="fw-bold">🚧 Control de Acceso al Recinto</h5>
+                <p class="text-muted">
+                    Registrar ingreso y salida de vehículos, validando OT y designación.
+                </p>
+                <a href="{% url 'control-acceso' %}" class="btn btn-outline-primary w-100">
+                    Ir a Control de Acceso
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        {# 5️⃣ Ficha vehículo: disponible para todos los roles #}
+        <div class="card feature-card">
+            <div class="card-body">
+                <h5 class="fw-bold">📄 Ficha Vehículo</h5>
+                <p class="text-muted">Consulta historial, OT y KPIs del vehículo.</p>
+                <a href="{% url 'ficha-vehiculo' %}" class="btn btn-outline-primary w-100">
+                    Abrir Ficha
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    {% else %}
+    <div class="alert alert-warning">
+        No se pudo cargar la información del empleado.
+    </div>
+    {% endif %}
+
+</div>
+
+<script src="{% static 'js/dashboard.js' %}"></script>
+
+{% endblock %}

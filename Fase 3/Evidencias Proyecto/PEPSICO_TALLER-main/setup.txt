@@ -1,0 +1,56 @@
+# 🚀 Iniciando entorno de desarrollo PepsiCo Taller (Windows)
+
+# 1. Crear entorno virtual si no existe
+python -m venv env
+
+# 2. Activar entorno virtual
+env\Scripts\activate
+
+# 3. Instalar dependencias (volver a actualizar con comando verde que arroje python)
+pip install --upgrade pip 
+pip install -r requirements.txt
+
+# 4. (IMPORTANTE) Crear/actualizar la base de datos MySQL
+#    - Conectarse a MySQL y ejecutar el script SQL de tablas:
+#      -> scriptDB.sql  (recinto, empleados, vehiculos, ordenestrabajo, pausas, etc.)
+#    La BD se administra fuera de Django (managed = False en la mayoría de los modelos).
+
+#Modificar .env con credenciales de BD
+# 5. Aplicar migraciones de Django (solo apps internas + chat + documentos)
+python manage.py migrate
+
+# 6. Crear superusuario Django (para acceder a /admin)
+python manage.py createsuperuser
+
+# 7. Levantar servidor de desarrollo
+python manage.py runserver
+
+
+======================================================================================
+
+
+# 🚀 Iniciando entorno de desarrollo PepsiCo Taller (macOS / Linux)
+
+# 1. Crear entorno virtual si no existe
+python3 -m venv env
+
+# 2. Activar entorno virtual
+source env/bin/activate
+
+# 3. Instalar dependencias
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# 4. (IMPORTANTE) Crear/actualizar la base de datos MySQL
+#    - Conectarse a MySQL y ejecutar el script SQL de tablas:
+#      -> script_schema_pepsico.sql  (recinto, empleados, vehiculos, ordenestrabajo, pausas, etc.)
+#    La BD se administra fuera de Django (managed = False en la mayoría de los modelos).
+
+# 5. Aplicar migraciones de Django (solo apps internas + chat + documentos)
+python manage.py migrate
+
+# 6. Crear superusuario Django (para acceder a /admin)
+python manage.py createsuperuser
+
+# 7. Levantar servidor de desarrollo
+python manage.py runserver

@@ -1,0 +1,54 @@
+{# templates/agenda.html #}
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Agenda Taller | PepsiCo Chile{% endblock %}
+
+{% block content %}
+<div class="page-container fade-in">
+
+    <div class="welcome-card mb-4">
+        <div class="welcome-content">
+            <div class="welcome-avatar">📆</div>
+            <div class="welcome-text">
+                <h1>Agenda del Taller</h1>
+                <p>Programación de ingresos — Supervisor</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm p-4 mb-4">
+        <h5 class="fw-bold mb-3">🗓 Seleccione Fecha</h5>
+
+        <div class="row g-3">
+            <div class="col-md-3">
+                <input id="inputFecha" type="date" class="form-control" />
+            </div>
+
+            <div class="col-md-2">
+                <button id="btnBuscarSlots" class="btn btn-primary w-100">
+                    Cargar Horarios
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm p-4">
+        <h5 class="fw-bold mb-3">⏰ Horarios Disponibles</h5>
+
+        <div id="slotsContainer" class="row g-3"></div>
+    </div>
+
+</div>
+
+{# 👇 Importante: inyectar el ID del taller para agenda.js, de forma segura #}
+<script>
+  // Si `taller_id` no viene en el contexto, se fuerza a "0"
+  window.TALLER_ID = parseInt(
+    "{{ taller_id|default_if_none:'0'|default:'0' }}",
+    10
+  ) || 0;
+</script>
+
+<script src="{% static 'js/agenda.js' %}"></script>
+{% endblock %}

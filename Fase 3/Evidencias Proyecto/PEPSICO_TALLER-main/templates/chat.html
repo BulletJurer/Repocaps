@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat en tiempo real</title>
+    <style>
+        #chat-log {
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Chat en tiempo real</h2>
+
+<div id="chat-log"></div>
+<br>
+
+<input type="text" id="chat-message-input" placeholder="Escribe un mensaje...">
+<button id="send">Enviar</button>
+
+<script>
+    const roomName = "sala1";  
+    const username = "{{ usuario }}";
+
+    const socket = new WebSocket(
+        "ws://" + window.location.host + "/ws/chat/" + roomName + "/"
+    );
+
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        document.querySelector("#chat-log").innerHTML +=
+            "<b>" + data.usuario + "</b>: " + data.message + "<br>";
+    };
+
+    document.querySelector("#send").onclick = function() {
+        const input = document.querySelector("#chat-message-input");
+        socket.send(JSON.stringify({
+            "message": input.value,
+            "usuario": username
+        }));
+        input.value = "";
+    };
+</script>
+
+</body>
+</html>

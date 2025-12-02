@@ -1,0 +1,116 @@
+{% if ots %}
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+
+        <h5 class="fw-bold mb-3">Vehículos Asignados</h5>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>OT</th>
+                        <th>Patente</th>
+                        <th>Marca / Modelo</th>
+                        <th>Fecha Ingreso</th>
+                        <th>Estado OT</th>
+                        <th>Acciones</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for ot in ots %}
+                    <tr>
+                        <!-- Nº OT -->
+                        <td class="fw-bold text-primary">#{{ ot.ot_id }}</td>
+
+                        <!-- Patente -->
+                        <td>{{ ot.patente.patente }}</td>
+
+                        <!-- Marca / Modelo -->
+                        <td>{{ ot.patente.marca }} {{ ot.patente.modelo }}</td>
+
+                        <!-- Fecha / hora ingreso -->
+                        <td>
+                            {{ ot.fecha_ingreso|date:"d M Y" }}
+                            {{ ot.hora_ingreso|time:"H:i" }}
+                        </td>
+
+                        <!-- Estado OT (badge) -->
+                        <td>
+                            {% if ot.estado == "Pendiente" %}
+                                <span class="badge bg-secondary">Programado</span>
+                            {% elif ot.estado == "Recibida" %}
+                                <span class="badge bg-info text-dark">Recibida</span>
+                            {% elif ot.estado == "En Taller" %}
+                                <span class="badge bg-warning text-dark">En Taller</span>
+                            {% elif ot.estado == "En Proceso" %}
+                                <span class="badge bg-primary">En Proceso</span>
+                            {% elif ot.estado == "Pausado" %}
+                                <span class="badge bg-dark">Pausado</span>
+                            {% else %}
+                                <span class="badge bg-light text-muted">{{ ot.estado }}</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Acciones -->
+                        <td>
+                            {% if ot.estado == "Pendiente" %}
+                                {% if ot.patente.estado == "En Recinto" or ot.patente.estado == "En Taller" %}
+                                    <button class="btn btn-sm btn-primary btn-recibir"
+                                            data-patente="{{ ot.patente.patente }}">
+                                        Recibir
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-sm btn-outline-secondary"
+                                            disabled
+                                            title="El guardia debe registrar primero el ingreso en control de acceso.">
+                                        Recibir
+                                    </button>
+                                {% endif %}
+                            {% else %}
+                                {% if ot.estado == "Pausado" or ot.estado == "En Taller" or ot.estado == "Recibida" %}
+                                    <button class="btn btn-sm btn-success btn-reanudar"
+                                            data-patente="{{ ot.patente.patente }}">
+                                        ▶
+                                    </button>
+                                {% endif %}
+
+                                {% if ot.estado == "En Proceso" %}
+                                    <button class="btn btn-sm btn-warning btn-pausar text-dark"
+                                            data-patente="{{ ot.patente.patente }}">
+                                        ⏸
+                                    </button>
+                                {% endif %}
+
+                                {% if ot.estado == "En Proceso" %}
+                                    <button class="btn btn-sm btn-danger btn-finalizar"
+                                            data-patente="{{ ot.patente.patente }}">
+                                        ✔
+                                    </button>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+
+                        <!-- Ver ficha -->
+                        <td>
+                            <a href="/ficha-vehiculo/?patente={{ ot.patente.patente }}"
+                               class="btn btn-sm btn-outline-primary">
+                                Ver Ficha
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-info">
+    No tienes vehículos asignados actualmente.
+</div>
+{% endif %}
